@@ -13,12 +13,12 @@
                         <li class="breadcrumb-item active">Utilisateur</li>
                     </ol>
                     <div class="mb-4">
-                        
-                          <a href="" style="padding: 5px,5px,5px,5px;" class="btn btn-outline-warning text-dark">Ajouter</a>
-                        
+                        <button type="button"  data-bs-toggle="modal" data-bs-target="#myModal"
+                     
+                       style="padding: 5px,5px,5px,5px;" class="btn btn-outline-warning text-dark">Ajouter
+                         </button>    
                     </div>
 
-                        <hr>
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
@@ -510,7 +510,50 @@
                     </div>
                 </div>
         
-        
+                <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <form method='post' action="">
+                            <div class="modal-body">
+                                <div class="form-group mb-4">
+                                    <label for="email1">Nom</label>
+                                    <input type="text" class="form-control" id="email1" name='nom' aria-describedby="emailHelp" placeholder="Enter email">
+                           
+                                  </div>
+                                  <div class="form-group  mb-4">
+                                    <label for="email1">Prenom</label>
+                                    <input type="text" class="form-control"name='prenom' id="email1" aria-describedby="emailHelp" placeholder="Enter email">
+                           
+                                  </div>
+                              <div class="form-group  mb-4">
+                                <label for="email1">Email address</label>
+                                <input type="email" class="form-control" id="email1"name='email' aria-describedby="emailHelp" placeholder="Enter email">
+                       
+                              </div>  <div class="form-group  mb-4">
+                                <label for="email1">Roles</label>
+                                <select class="form-control" name='role' >
+                       <option>roles</option>
+                       {% for role in roles %}
+                       <option value="role.id"> {{role.nom}}</option>
+                        {% endfor %}
+                                </select>
+                              </div>
+                              <div class="form-group  mb-4">
+                                <label for="password1">Password</label>
+                                <input type="password" class="form-control" id="password1" name='password' placeholder="Password">
+                              </div>
+                              <div class="form-group">
+                                <label for="password1">Confirm Password</label>
+                                <input type="password" class="form-control" id="password2" name='c_password' placeholder="Confirm Password">
+                              </div>
+                            </div>
+                            <div class="modal-footer border-top-0 d-flex justify-content-center">
+                              <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                          </form>
+                      </div>
+                    </div>
+                  </div>
               
             </div>
         
@@ -547,18 +590,7 @@
           </body>
         </html>
     </main>
-    <footer class="py-4 bg-light mt-auto">
-        <div class="container-fluid px-4">
-            <div class="d-flex align-items-center justify-content-between small">
-                <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                <div>
-                    <a href="#">A.Cedric</a>
-                    &middot;
-                    <a href="#">d'.K</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+   
 {% endblock body %}
             
 
