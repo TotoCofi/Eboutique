@@ -1,10 +1,11 @@
 from django.shortcuts import redirect, render
-from .models import Roles,Users
+from .models import *
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
 from django.contrib.auth import logout,authenticate, login
 from datetime import datetime, timedelta
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 import re
 import random
@@ -89,10 +90,11 @@ def acceuil(request):
         return render(request,'login.html')
     else:
        return render(request,'index.html')
+
 def user_logout(request):
   logout(request)
   return redirect('/')
-
+@login_required
 def user(request):
     rol= Roles.objects.all()
     users=Users.objects.select_related('role')
@@ -122,13 +124,13 @@ def user(request):
             
                 if len(password)<8:
                     message = "Le mot de passe doit contenir au moins 8 caractères."
-                    return render(request, 'user.html',{'error_messages': message,'users':users})
+                    return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
                         
                 if password != c_password :  
                     message = "Les mot de passe doivent etre identique"
-                    return render(request, 'user.html',{'error_messages': message,'users':users})
+                    return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
                 else:
-                    user = Users.objects.create_superuser(Email=email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
+                    user = Users.objects.create_superuser(email=email, username=email ,is_active=0, first_name = nom ,last_name = prenom ,phone=phone,role=role)
                     user.set_password(password) 
                     subject = 'Bienvenue !'
                      
@@ -141,30 +143,30 @@ def user(request):
                     user.save()
                     users=Users.objects.select_related('role')
                     message = "Utilisateur enregister"
-                    return render(request, 'user.html',{'messages': message,'users':users})
+                    return render(request, 'user.html',{'roles':rol,'messages': message,'users':users})
             else:
                 
                     message = "role innexistant"
-                    return render(request, 'user.html',{'error_messages': message,'users':users})
+                    return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
 
 
     
     return render(request,'user.html',{'roles':rol,'users':users})
-
+@login_required
 def client(request):
     return render(request,'client.html')
-
+@login_required
 def categorie(request):
     return render(request,'categorie.html')
-
+@login_required
 def produit(request):
     return render(request,'produit.html')
-
+@login_required
 def commande(request):
     return render(request,'commande.html')
-
+@login_required
 def payement(request):
     return render(request,'payement.html')
-
+@login_required
 def facture(request):
     return render(request,'facture.html')
