@@ -1,5 +1,8 @@
+from nis import cat
+from pydoc import cli
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
-from .models import Roles,Users
+from .models import *
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
@@ -128,7 +131,7 @@ def user(request):
                     message = "Les mot de passe doivent etre identique"
                     return render(request, 'user.html',{'error_messages': message,'users':users})
                 else:
-                    user = Users.objects.create_superuser(Email=email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
+                    user = Users.objects.create_superuser(username = email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
                     user.set_password(password) 
                     subject = 'Bienvenue !'
                      
@@ -151,14 +154,41 @@ def user(request):
     
     return render(request,'user.html',{'roles':rol,'users':users})
 
-def client(request):
-    return render(request,'client.html')
+def client(request): 
+    clients = Clients.objects.all()
+    if request.method == "POST":
+        nom = request.POST['nom']
+        adresse = request.POST['adresse']
+        phone = request.POST['phone']
+        user = Users.objects.get(id = request.user.id )
+        client = Clients(nom = nom,adresse = adresse,phone = phone,user = user ) 
+        client.save()
+    return render(request,'client.html',{'clients':clients})
 
 def categorie(request):
-    return render(request,'categorie.html')
+    categories = Categories.objects.all()
+    if request.method == "POST":
+        nom = request.POST['nom']
+        user = Users.objects.get(id = request.user.id)
+        categorie = Categories(nom = nom,user = user)
+        categorie.save()
+    return render(request,'categorie.html',{'categories':categories})
 
 def produit(request):
-    return render(request,'produit.html')
+    produits = Produits.objects.all()
+    categories = Categories.objects.all()
+    if request.method == "POST":
+        nom = request.POST['nom']
+        description = request.POST['description']
+        prix = request.POST['prix']
+        quantiter = request.POST['quantiter']
+        seuil = request.POST['seuil']
+        id = request.POST['cate']
+        cat = Categories.objects.get(id = id )
+        user = Users.objects.get(id = request.user.id)
+        produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
+        produit.save()
+    return render(request,'produit.html',{"categories":categories,"produits":produits})
 
 def commande(request):
     return render(request,'commande.html')
