@@ -107,7 +107,9 @@
                     </div>
                     <div class="sb-sidenav-footer text-dark" style="background-color: #ffc107;">
                         <div class="small">Logged in as:</div>
-                        Start Bootstrap
+                        {% if user.is_authenticated %}
+                            {{user.last_name}}
+                        {% endif %}
                     </div>
                 </nav>
             </div>
@@ -143,6 +145,11 @@
             <script src="{% static 'assets/demo/chart-bar-demo.js' %}"></script>
             <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
             <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+            <script>
+                function confirme(){
+                     confirme("Etêt vous sur de supprimer ")
+                }
+            </script>
         </body>
         
     </html>
