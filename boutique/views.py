@@ -1,7 +1,5 @@
-from nis import cat
-from pydoc import cli
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render ,get_object_or_404
 from .models import *
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -12,6 +10,9 @@ from django.contrib.auth.decorators import login_required
 import re
 import random
 import string
+
+
+
 def verification(request):
   if request.method == 'POST':
       code = request.POST.get('code')
@@ -37,11 +38,15 @@ def verification(request):
          return render(request, 'verification.html',{'error_messages': message})
   else:
     return render(request, 'verification.html')
+  
+
 def generate_unique_code():
     length = 6  # Longueur du code à usage unique
     characters = string.ascii_letters + string.digits  # Caractères autorisés pour le code
     code = ''.join(random.choices(characters, k=length))
     return code
+
+
 def codemail(request,code,email):
             subject = "Votre code à usage unique"
             from_email = "noreply@example.com"
@@ -92,8 +97,6 @@ def acceuil(request):
         return render(request,'login.html')
     else:
        return render(request,'index.html')
-
-
 def user_logout(request):
   logout(request)
   return redirect('/')
@@ -156,27 +159,27 @@ def user(request):
     
     return render(request,'user.html',{'roles':rol,'users':users})
 def client(request): 
-    clients = Clients.objects.all()
+    clients = Clients.objects.all() # on recupère tout les clients enregistrés dans la base de données
     if request.method == "POST":
         nom = request.POST['nom']
         adresse = request.POST['adresse']
         phone = request.POST['phone']
-        user = Users.objects.get(id = request.user.id )
+        user = Users.objects.get(id = request.user.id ) # user reprsente un instance de la clase Users
         client = Clients(nom = nom,adresse = adresse,phone = phone,user = user ) 
         client.save()
     return render(request,'client.html',{'clients':clients})
 
 def categorie(request):
-    categories = Categories.objects.all()
+    categories = Categories.objects.all() # on recupère tout les catégorie enregistrés dans la base de données
     if request.method == "POST":
         nom = request.POST['nom']
-        user = Users.objects.get(id = request.user.id)
+        user = Users.objects.get(id = request.user.id)  # user reprsente un instance de la clase Users
         categorie = Categories(nom = nom,user = user)
         categorie.save()
     return render(request,'categorie.html',{'categories':categories})
 
 def produit(request):
-    produits = Produits.objects.all()
+    produits = Produits.objects.all() # on recupère tout les produits enregistrés dans la base de données
     categories = Categories.objects.all()
     if request.method == "POST":
         nom = request.POST['nom']
@@ -185,11 +188,65 @@ def produit(request):
         quantiter = request.POST['quantiter']
         seuil = request.POST['seuil']
         id = request.POST['cate']
-        cat = Categories.objects.get(id = id )
-        user = Users.objects.get(id = request.user.id)
+        cat = Categories.objects.get(id = id )  # cat reprsente un instance de la clase Catégories
+        user = Users.objects.get(id = request.user.id)  # user reprsente un instance de la clase Users
         produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
         produit.save()
     return render(request,'produit.html',{"categories":categories,"produits":produits})
+
+def update_client(request,id):
+    client_u = get_object_or_404(Clients, pk = id)
+    if request.method == "POST":
+        client_u.nom = request.POST['nom']
+        client_u.adresse = request.POST["adresse"]
+        client_u.phone = request.POST["phone"]
+        client_u.user = Users.objects.get(id = request.user.id)
+        client_u.save()
+        return redirect('client')
+
+    return render(request,'update_client.html',{'clients_u':client_u})
+ 
+def update_categorie(request,id):
+    categorie_u = get_object_or_404(Categories, pk = id)
+    if request.method == "POST":
+        categorie_u.nom = request.POST['nom']
+        categorie_u.user = Users.objects.get(id = request.user.id)
+        categorie_u.save()
+        return redirect('categorie')
+
+    return render(request,'update_categorie.html',{'categories_u':categorie_u})
+ 
+
+def update_produit(request,id):
+    produit_u = get_object_or_404(Produits, pk = id)
+    if request.method == "POST":
+        produit_u.nom = request.POST['nom']
+        produit_u.description = request.POST['description']
+        produit_u.prix = request.POST['prix']
+        produit_u.quantite = request.POST['quantite']
+        produit_u.seuil = request.POST['seuil']
+        produit_u.user = Users.objects.get(id = request.user.id)
+        produit_u.save()
+        return redirect('produit')
+
+    return render(request,'update_produit.html',{'produits_u':produit_u})
+ 
+def delete_client(request,id):
+    client_d = get_object_or_404(Clients, pk = id)
+    client_d.delete()
+    return redirect('client')
+
+def delete_categorie(request,id):
+    categorie_d = get_object_or_404(Categories, pk = id)
+    categorie_d.delete()
+    return redirect('categorie')
+
+def delete_produit(request,id):
+    produit_d = get_object_or_404(Produits, pk = id)
+    produit_d.delete()
+    return redirect('produit')
+
+
 
 def commande(request):
     return render(request,'commande.html')
