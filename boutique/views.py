@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 from django.shortcuts import redirect, render ,get_object_or_404
 from .models import *
@@ -10,7 +11,65 @@ from django.contrib.auth.decorators import login_required
 import re
 import random
 import string
+from django.core import serializers
 
+def add_acheter(request):
+    pro_id= request.POST.get('pro_id')
+    cli_id= request.POST.get('cli_id')
+    qte= int(request.POST.get('qte'))
+ 
+    commande_id= request.POST.get('commande_id')
+    produit =Produits.objects.filter(id=pro_id).first()
+    client =Clients.objects.filter(id=cli_id).first()
+    
+
+
+    commande =Commandes.objects.filter(id=commande_id).first()
+
+    if not commande:
+       if client:
+          user=request.user
+          commande =Commandes(client=client,user=user)    
+          commande.save()
+    if produit and client:
+        prixcommande=int(qte * produit.prix)
+        acheter=Acheter(commande=commande,Produit=produit,quantite=qte,prixcommande=prixcommande)
+        acheter.save()
+        achat = Acheter.objects.filter(commande=commande).select_related('Produit').values('quantite', 'prixcommande','Produit__nom', 'Produit__prix','id')
+        serialized_achat = json.dumps(list(achat))
+
+        return JsonResponse({'commande_id': commande.id, 'acheter': serialized_achat}, safe=False)
+    else:  
+       return JsonResponse({'produit':'prix unitaire'})   
+
+def del_acheter(request):
+    id= request.POST.get('id')
+    acheter =Acheter.objects.filter(id=id).first()
+    produit=Produits.objects.filter(id=acheter.Produit_id).first()
+    if acheter:
+        prix= acheter.prixcommande
+        if acheter.delete():
+            produit_data = {'nom': produit.nom, 'id': produit.id}
+            return JsonResponse({'resp':'true','produit':produit_data,'prix':prix}, safe=False)
+        
+    return JsonResponse({'resp':'false'}) 
+def valid_achat(request):
+    commande_id= request.POST.get('commande_id')
+    total= request.POST.get('total')
+    commande =Commandes.objects.filter(id=commande_id).first()
+    if commande:
+        commande.prixtotal=total
+        commande.save()
+        return JsonResponse({'resp':'true'}) 
+    return JsonResponse({'resp':'false'}) 
+
+def prix_unitaire(request):
+    pro_id= request.POST.get('id')
+    produit =Produits.objects.filter(id=pro_id).first()
+    if produit:
+     return JsonResponse({'produit':produit.prix})
+    else:  
+     return JsonResponse({'produit':'prix unitaire'})   
 
 
 def verification(request):
@@ -45,7 +104,6 @@ def generate_unique_code():
     characters = string.ascii_letters + string.digits  # Caractères autorisés pour le code
     code = ''.join(random.choices(characters, k=length))
     return code
-
 
 def codemail(request,code,email):
             subject = "Votre code à usage unique"
@@ -205,7 +263,7 @@ def update_client(request,id):
         return redirect('client')
 
     return render(request,'update_client.html',{'clients_u':client_u})
- 
+
 def update_categorie(request,id):
     categorie_u = get_object_or_404(Categories, pk = id)
     if request.method == "POST":
@@ -236,6 +294,7 @@ def delete_client(request,id):
     client_d.delete()
     return redirect('client')
 
+
 def delete_categorie(request,id):
     categorie_d = get_object_or_404(Categories, pk = id)
     categorie_d.delete()
@@ -246,10 +305,15 @@ def delete_produit(request,id):
     produit_d.delete()
     return redirect('produit')
 
+def add_commande(request):
+    clients = Clients.objects.all()
+    produits = Produits.objects.all()
 
+    return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits})
 
 def commande(request):
-    return render(request,'commande.html')
+    commande = Commandes.objects.filter(prixtotal__gt=0).select_related('client','user')
+    return render(request,'commande.html',{'commandes':commande})
 @login_required
 def payement(request):
     return render(request,'payement.html')

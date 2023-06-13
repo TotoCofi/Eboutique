@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+
+{% block body %}
+            
+<div id="layoutSidenav_content">
+    <main>
+            <div class="container-fluid">
+                
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Commande</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item "><a class="text-warning" href="index.html">Acceuil</a></li>
+                        <li class="breadcrumb-item active">Ajout Commande</li>
+                    </ol>
+                 
+                   
+                </div>
+                <main id="main" class="main">              
+                    <section class="section profile">
+                      <div class="row">
+                        <div class="col-xl-4">
+                
+                          <div class="card"> {% if error_messages %}
+                            <div class="badge bg-danger"> 
+                         
+                                 {{error_messages}}</div>
+                                      {% endif %}
+                                      {% if messages %}
+                           <div class="badge bg-success"> 
+                         
+                                       {{messages}}</div>
+                                            {% endif %}
+                            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                
+                          <div>
+                            
+                                    <div class="row justify-content-between mb-3 text-left">
+                                        <div class="form-group col-12 flex-column d-flex"> 
+                                           
+                                            <select class="form-select" name="client" id='cli_id' aria-label="Default select example"required>
+                                                <option selected>Client</option>
+                                                {% for c in cli %}
+                                         
+                                                <option value="{{c.id}}">{{c.nom}}</option>
+                                             {% endfor %}
+                                              
+                                              </select> </div>
+                                    </div>
+                                    <div class="row justify-content-between mb-3 text-left">
+                                        <div class="form-group col-sm-6 flex-column d-flex"> 
+                                          <select class="form-select" name="client" id='pro_id'onchange='prix_unitaire()' aria-label="Default select example"required>
+                                            <option selected>Produit</option>
+                                            {% for c in pros %}
+                                     
+                                            <option value="{{c.id}}">{{c.nom}} </option>
+                                         {% endfor %}
+                                          
+                                          </select> </div>
+                                        <div class="form-group col-sm-6 flex-column d-flex">
+                                             <label class="form-control-label " id='pu'>Prix unitaire</label><span class='text-danger'>fcfa</span>
+                                           </div>
+                                    </div>
+                                    <div class="row justify-content-between text-left mb-3 ">
+                                      <div class="form-group col-sm-6 flex-column d-flex"> 
+                                        <input type="number" id='qte' class="form-control" onchange='prix_total()'name='quantiter' aria-describedby="emailHelp" placeholder="Quantité">
+                       
+                                       </div>
+                                      <div class="form-group col-sm-6 flex-column d-flex">
+                                           <label class="form-control-label " id='pt'>Prix Total</label> <span class='text-danger'>fcfa</span>
+                                         </div>
+                                  </div>
+                                    
+                                    <div class="row justify-content-between ">
+                                        <div class="form-group col-sm-12  "> <button type="submit" onclick='sav()' class="btn-block btn btn-warning">Valider</button> </div>
+                                    </div>
+                       
+                            </div>
+                          </div>
+                          </div>
+                
+                        </div>
+                
+                        <div class="col-xl-8">
+                
+                          <div class="card">
+                            <div class="card-body pt-3">
+                              <!-- Bordered Tabs -->
+                         
+                              <div class="tab-content pt-2">
+                
+                                
+                
+                                <table  class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>quantité</th>
+                                            <th>prix unitaire</th>
+                                            <th>prix total</th>
+                                            <th>Action</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody  id="tableBody">
+                                    
+                                    </tbody>
+                                </table>
+                
+                              </div><!-- End Bordered Tabs -->
+                
+                            </div>
+                          </div>
+                
+                        </div>
+                      </div>
+                    </section>
+                    <div class="mb-4">
+                      <button type="button"  
+                   
+                     style="padding: 5px,5px,5px,5px;" onclick='payement()' class="btn btn-outline-warning text-dark m-5">TERMINER
+                       </button>    
+                  </div>
+                  </main><!-- End #main -->
+                {% include   "footer.html" %}
+              
+            </div>
+        
+            <!-- Bootstrap core JavaScript
+            ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+            <script src="../../../../assets/js/vendor/popper.min.js"></script>
+            <script src="../../../../dist/js/bootstrap.min.js"></script>
+            <script src="../../../../assets/js/vendor/holder.min.js"></script>
+          
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+ function prix_unitaire() {
+      document.getElementById('pu').innerHTML=''
+      let id=document.getElementById('pro_id').value
+      if(id==null)
+      {
+        alert('produit innexistant')
+      }else
+      {
+      $.ajax({
+        url: '/prix_unitaire/',  // URL de la vue pour supprimer l'utilisateur
+        type: 'POST',
+        data: {
+          'id': id,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        
+        success: function(response) {
+      
+            document.getElementById('pu').innerHTML=response.produit
+     
+         
+          
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          // Traitement en cas d'erreur lors de la suppression de l'utilisateur
+          console.log(errorThrown);
+        }
+      });
+    }
+    }
+    function prix_total()
+    {      
+  document.getElementById('pt').innerHTML=''
+let pu=document.getElementById('pu').innerHTML
+document.getElementById('pt').innerHTML= pu * document.getElementById('qte').value
+    }
+
+  </script>
+
+
+<script>
+  let commande_id=0
+
+function payement(){
+  $.ajax({
+    url: '/valid_achat/',  // URL de la vue pour supprimer l'utilisateur
+    type: 'POST',
+    data: {
+      
+      'total':$('.total').text(),
+      'commande_id':commande_id,
+      'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    
+    success: function(response) {
+      if(response.resp=='true')
+      {
+        window.location.pathname = "/payement/"+commande_id;
+      }
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      // Traitement en cas d'erreur lors de la suppression de l'utilisateur
+      console.log(errorThrown);
+    }
+  });
+
+
+}
+
+
+    function sav()
+    {
+      let pro_id=document.getElementById('pro_id').value
+      
+      let cli_id=parseInt(document.getElementById('cli_id').value)
+  
+      let  qte = document.getElementById('qte').value
+      if(pro_id=='' || cli_id=='' || qte =='')
+      {
+        alert('Veuillez remplir tout les champs')
+      }else
+      {
+
+      $.ajax({
+        url: '/add_acheter/',  // URL de la vue pour supprimer l'utilisateur
+        type: 'POST',
+        data: {
+          'pro_id': pro_id,
+          'cli_id': cli_id,
+          'qte':qte,
+          'commande_id':commande_id,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        
+        success: function(response) {
+          
+          $('#tableBody').empty();
+          commande_id=response.commande_id
+     
+  var acheterData = JSON.parse(response.acheter);
+var total=0
+  $.each(acheterData, function(index, acheter) {
+          var row = $('<tr>'); 
+            // Ajouter les cellules <td> avec les valeurs appropriées
+            var produitCell = $('<td>').text(acheter.Produit__nom);
+            var quantiteCell = $('<td>').text(acheter.quantite);
+            var prixUnitaireCell = $('<td>').text(acheter.Produit__prix );
+            var prixTotalCell = $('<td>').text(acheter.prixcommande);
+              total += acheter.prixcommande;
+              var deleteIcon = $('<i>').addClass('fas fa-trash-alt'); 
+                 var btn =$('<button>').addClass('btn btn-da')  
+                  
+                  
+                  btn.click(function() {
+                    var icon = $(this); 
+                    $.ajax({
+                      url: '/del_acheter/',  // URL de la vue pour supprimer l'utilisateur
+                      type: 'POST',
+                      data: {
+                        'id':acheter.id,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                      },
+                      
+                      success: function(response) {
+                        if(response.resp=='true')
+                        {
+                   icon.closest('tr').remove();
+              total-=response.prix
+              $('.total').text(total)
+                    $('#pro_id').append($('<option>', {
+                      value: response.produit.id,
+                      text: response.produit.nom
+                  }));
+                  
+}
+                  },
+                  error: function(xhr, textStatus, errorThrown) {
+                    // Traitement en cas d'erreur lors de la suppression de l'utilisateur
+                    console.log(errorThrown);
+                  }
+                });
+
+
+
+                });
+                btn.append(deleteIcon)
+                var actionCell = $('<td>').append(btn);
+           
+         
+            // Ajouter les cellules à la ligne
+            row.append(produitCell, quantiteCell, prixUnitaireCell, prixTotalCell, actionCell);
+  
+            // Ajouter la ligne au <tbody>
+            $('#tableBody').append(row);
+         
+          });
+          var row = $('<tr>'); 
+            var t=$('<th>').text("TOTAL");
+  var totalCell = $('<td>').text(total);
+    totalCell.addClass('total')
+    row.append(t,totalCell)
+            // Ajouter la cellule de total à la dernière colonne de chaque ligne du tableau
+            $('#tableBody').append(row);
+
+         
+
+           for (var i = 0; i < document.getElementById('pro_id').options.length; i++) {
+            var option =  document.getElementById('pro_id').options[i];
+          
+            // Vérifier si la valeur de l'option correspond à celle à supprimer
+            if (option.value === document.getElementById('pro_id').value) {
+              // Supprimer l'option du select
+              document.getElementById('pro_id').remove(i);
+              break; // Arrêter la boucle après la suppression de l'option
+            }
+          }
+        
+           document.getElementById('pro_id').selectedIndex = 0
+      document.getElementById('qte').value=null
+         
+  document.getElementById('pt').innerHTML='Prix unitaire'
+  document.getElementById('pu').innerHTML='Prix total'
+          
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          // Traitement en cas d'erreur lors de la suppression de l'utilisateur
+          console.log(errorThrown);
+        }
+      });
+    }
+  
+      }
+  </script>
+
+          </body>
+        </html>
+    </main>
+   
+{% endblock body %}
+            
+
+    
