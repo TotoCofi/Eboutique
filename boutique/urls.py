@@ -44,6 +44,8 @@ urlpatterns = [
     path('update_categorie/<int:id>',update_categorie,name='update_categorie'),
     path('update_produit/<int:id>',update_produit,name='update_produit'),
     path('delete_client/<int:id>',delete_client,name='delete_client'),
+    path('delete_categorie/<int:id>',delete_categorie,name='delete_categorie'),
+    path('delete_produit/<int:id>',delete_produit,name='delete_produit'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
