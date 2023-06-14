@@ -49,7 +49,7 @@ class Mode_payements(models.Model):
     mode = models.CharField(max_length=255, unique=True)
     user= models.ForeignKey('Users', on_delete=models.CASCADE)
      
-class Payement(models.Model):
+class Payements(models.Model):
     commande= models.ForeignKey('Commandes', on_delete=models.CASCADE)
     mode_payement= models.ForeignKey('Mode_payements', on_delete=models.CASCADE)
     user= models.ForeignKey('Users', on_delete=models.CASCADE)

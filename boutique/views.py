@@ -33,6 +33,8 @@ def add_acheter(request):
           commande =Commandes(client=client,user=user)    
           commande.save()
     if produit and client:
+        produit.quantite-=qte
+        produit.save()
         prixcommande=int(qte * produit.prix)
         acheter=Acheter(commande=commande,Produit=produit,quantite=qte,prixcommande=prixcommande)
         acheter.save()
@@ -46,10 +48,13 @@ def add_acheter(request):
 def del_acheter(request):
     id= request.POST.get('id')
     acheter =Acheter.objects.filter(id=id).first()
+    qte= int(request.POST.get('qte'))
     produit=Produits.objects.filter(id=acheter.Produit_id).first()
     if acheter:
         prix= acheter.prixcommande
         if acheter.delete():
+            produit.quantite+=qte
+            produit.save()
             produit_data = {'nom': produit.nom, 'id': produit.id}
             return JsonResponse({'resp':'true','produit':produit_data,'prix':prix}, safe=False)
         
@@ -63,7 +68,7 @@ def valid_achat(request):
     user=request.user
     if commande:
         commande.prixtotal=total
-        payement=Payement(commande=commande ,mode_payement=mode,user=user)
+        payement=Payements(commande=commande ,mode_payement=mode,user=user)
         payement.save()
         commande.save()
         return JsonResponse({'resp':'true'}) 
@@ -73,7 +78,7 @@ def prix_unitaire(request):
     pro_id= request.POST.get('id')
     produit =Produits.objects.filter(id=pro_id).first()
     if produit:
-     return JsonResponse({'produit':produit.prix})
+     return JsonResponse({'produit':produit.prix,"qte":produit.quantite})
     else:  
      return JsonResponse({'produit':'prix unitaire'})   
 
@@ -190,7 +195,7 @@ def user(request):
 
             if not re.match(benin_regex, phone):
                 message = "Numéro de téléphone invalide ou non du Bénin"
-                return render(request, 'user.html',{'error_messages': message})
+                return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
                
             nom= request.POST.get('nom')
             prenom= request.POST.get('prenom')
@@ -208,7 +213,7 @@ def user(request):
                     message = "Les mot de passe doivent etre identique"
                     return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
                 else:
-                    user = Users.objects.create_superuser(username = email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
+                    user = Users.objects.create_superuser(password=password, username = email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
                     #user.set_password(password) 
                     subject = 'Bienvenue !'
                      
@@ -358,7 +363,7 @@ def commande(request):
     return render(request,'commande.html',{'commandes':commande})
 @login_required
 def payement(request):
-    payement= Payement.objects.select_related('commande__client','user')
+    payement= Payements.objects.select_related('commande__client','user')
     return render(request,'payement.html',{'payements':payement})
 @login_required
 def facture(request):

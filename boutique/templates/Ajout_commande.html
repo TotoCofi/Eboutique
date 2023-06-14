@@ -166,6 +166,8 @@
         success: function(response) {
       
             document.getElementById('pu').innerHTML=response.produit
+            document.getElementById('qte').setAttribute('max', response.qte);
+
      
          
           
@@ -179,9 +181,22 @@
     }
     function prix_total()
     {      
+
+     max= parseInt( document.getElementById('qte').getAttribute('max'))
+    
+if (document.getElementById('qte').value <= max)
+{
   document.getElementById('pt').innerHTML=''
 let pu=document.getElementById('pu').innerHTML
 document.getElementById('pt').innerHTML= pu * document.getElementById('qte').value
+
+}else{
+  document.getElementById('pt').innerHTML='la quantiter est superieur au stock'
+  document.getElementById('qte').value=null
+}
+
+
+
     }
 
   </script>
@@ -269,6 +284,7 @@ var total=0
                       type: 'POST',
                       data: {
                         'id':acheter.id,
+                        'qte':acheter.quantite,
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                       },
                       
