@@ -1,4 +1,5 @@
 import json
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render ,get_object_or_404
 from .models import *
@@ -121,9 +122,12 @@ def acceuil(request):
     if not request.user.id:
         if request.method == 'POST':
             email = request.POST.get('email')
+            print(email)
             password = request.POST.get('password')
+            print(password)
             remember_me = request.POST.get('remember_me')
             user= Users.objects.filter(email=email).first()
+            print(user)
             if user is not None:
                     if user.is_active==0:
                         if user.check_password(password):
@@ -140,10 +144,15 @@ def acceuil(request):
                             message = "Email ou mot de passe non valide"
                             return render(request, 'login.html',{'error_messages': message})
                     else:
-                        user = authenticate(request,email=email, password=password)
+                        #user = authenticate(request,email=email, password=password)
+                        print(user)
                         if user is not None:
-                            login(request, user)  
-                            return redirect('/')
+                            if user.check_password(password):
+                                login(request, user)  
+                                return redirect('/')
+                            else:
+                                message = "Mot de passe non valide"
+                            return render(request, 'login.html',{'error_messages': message})
                         else:
                             message = "Email ou mot de passe non valide"
                             return render(request, 'login.html',{'error_messages': message,} )
@@ -158,7 +167,7 @@ def acceuil(request):
 def user_logout(request):
   logout(request)
   return redirect('/')
-@login_required
+#@login_required
 def user(request):
     rol= Roles.objects.all()
     users=Users.objects.select_related('role')
@@ -195,7 +204,7 @@ def user(request):
                     return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
                 else:
                     user = Users.objects.create_superuser(username = email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
-                    user.set_password(password) 
+                    #user.set_password(password) 
                     subject = 'Bienvenue !'
                      
                     from_email = 'your_email@example.com'
@@ -222,9 +231,13 @@ def client(request):
         nom = request.POST['nom']
         adresse = request.POST['adresse']
         phone = request.POST['phone']
-        user = Users.objects.get(id = request.user.id ) # user reprsente un instance de la clase Users
-        client = Clients(nom = nom,adresse = adresse,phone = phone,user = user ) 
-        client.save()
+        user = Users.objects.get(id = request.user.id )# user reprsente un instance de la clase Users
+        cli = Clients.objects.filter(phone = phone).first() # Verifions si le numero exist
+        if cli:
+                messages.error(request,'le numéro existe déja')
+        else:
+            client = Clients(nom = nom,adresse = adresse,phone = phone,user = user ) 
+            client.save()
     return render(request,'client.html',{'clients':clients})
 
 def categorie(request):
@@ -248,8 +261,12 @@ def produit(request):
         id = request.POST['cate']
         cat = Categories.objects.get(id = id )  # cat reprsente un instance de la clase Catégories
         user = Users.objects.get(id = request.user.id)  # user reprsente un instance de la clase Users
-        produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
-        produit.save()
+        pro = Produits.objects.filter(nom = nom) # verifions si le produit exist dans la base de donnée
+        if pro: 
+            messages.error(request,'Ce produit existe déja')
+        else:
+            produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
+            produit.save()
     return render(request,'produit.html',{"categories":categories,"produits":produits})
 
 def update_client(request,id):

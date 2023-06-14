@@ -13,6 +13,13 @@
                         <li class="breadcrumb-item active">Produit</li>
                     </ol>
                     <div class="mb-4">
+                      {% if messages %}
+                      {% for message in messages %}
+                      <div class="alert alert-danger" role="alert">
+                        {{message}}
+                      </div>
+                      {% endfor %}
+                    {% endif %}
                         <button type="button"  data-bs-toggle="modal" data-bs-target="#myModal"
                      
                        style="padding: 5px,5px,5px,5px;" class="btn btn-outline-warning text-dark">Ajouter
