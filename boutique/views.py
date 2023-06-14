@@ -56,10 +56,15 @@ def del_acheter(request):
     return JsonResponse({'resp':'false'}) 
 def valid_achat(request):
     commande_id= request.POST.get('commande_id')
+    mode_id= request.POST.get('mode')
     total= request.POST.get('total')
     commande =Commandes.objects.filter(id=commande_id).first()
+    mode =Mode_payements.objects.filter(id=mode_id).first()
+    user=request.user
     if commande:
         commande.prixtotal=total
+        payement=Payement(commande=commande ,mode_payement=mode,user=user)
+        payement.save()
         commande.save()
         return JsonResponse({'resp':'true'}) 
     return JsonResponse({'resp':'false'}) 
@@ -280,6 +285,26 @@ def update_client(request,id):
         return redirect('client')
 
     return render(request,'update_client.html',{'clients_u':client_u})
+def update_user(request,id):
+    rol= Roles.objects.all()
+    user = get_object_or_404(Users, pk = id)
+    if request.method == "POST":
+      
+            benin_regex = r"^(\+229)?\d{8}$"
+            phone=request.POST.get('phone')
+
+            if not re.match(benin_regex, phone):
+                message = "Numéro de téléphone invalide ou non du Bénin"
+                return render(request, 'update_user.html',{'error_messages': message,'user':user,'roles':rol})
+            user.first_name = request.POST['nom']
+            user.first_prenom = request.POST['prenom']
+            user.role_id= request.POST.get('role')
+            user.email = request.POST["email"]
+            user.phone = request.POST["phone"]
+            user.save()
+            return redirect('user')
+
+    return render(request,'update_user.html',{'user':user,'roles':rol})
 
 def update_categorie(request,id):
     categorie_u = get_object_or_404(Categories, pk = id)
@@ -325,15 +350,16 @@ def delete_produit(request,id):
 def add_commande(request):
     clients = Clients.objects.all()
     produits = Produits.objects.all()
-
-    return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits})
-
+    Modes=Mode_payements.objects.all()
+    return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits,"modes":Modes})
+@login_required
 def commande(request):
     commande = Commandes.objects.filter(prixtotal__gt=0).select_related('client','user')
     return render(request,'commande.html',{'commandes':commande})
 @login_required
 def payement(request):
-    return render(request,'payement.html')
+    payement= Payement.objects.select_related('commande__client','user')
+    return render(request,'payement.html',{'payements':payement})
 @login_required
 def facture(request):
     return render(request,'facture.html')

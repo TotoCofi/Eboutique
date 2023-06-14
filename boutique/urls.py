@@ -41,6 +41,7 @@ urlpatterns = [
     path('payement',payement,name='payement'),
     path('facture',facture,name='facture'),
     path('update_client/<int:id>',update_client,name='update_client'),
+    path('update_user/<int:id>',update_user,name='update_user'),
     path('update_categorie/<int:id>',update_categorie,name='update_categorie'),
     path('update_produit/<int:id>',update_produit,name='update_produit'),
     path('delete_client/<int:id>',delete_client,name='delete_client'),

@@ -53,6 +53,7 @@ class Payement(models.Model):
     commande= models.ForeignKey('Commandes', on_delete=models.CASCADE)
     mode_payement= models.ForeignKey('Mode_payements', on_delete=models.CASCADE)
     user= models.ForeignKey('Users', on_delete=models.CASCADE)
+    created_at =models.DateTimeField(default=timezone.now)
  
 
          
