@@ -259,7 +259,7 @@ a.text-lightred:hover {
                 <div class="team-single-img">
                     <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="">
                 </div>
-                <div class="bg-light-gray padding-30px-all md-padding-25px-all sm-padding-20px-all text-center">
+                <div class="bg-light-gray padding-30px-all md-padding-25px-all sm-padding-20px-all">
                     <h5 class="margin-10px-bottom font-size24 md-font-size22 sm-font-size20 font-weight-600">Non : {{cmd_cli.user.last_name}}</h5>
                     <h5 class="margin-10px-bottom font-size24 md-font-size22 sm-font-size20 font-weight-600">Phone : {{cmd_cli.user.phone}}</h5>
                     <h5 class="margin-10px-bottom font-size24 md-font-size22 sm-font-size20 font-weight-600">Role : {{cmd_cli.user.role.nom}}</h5>
@@ -274,7 +274,7 @@ a.text-lightred:hover {
                     <h4 class="font-size38 sm-font-size32 xs-font-size30">{{cmd_cli.client.nom}}</h4>
                     
                     
-                    <div class="bg-light-gray padding-30px-all md-padding-25px-all sm-padding-20px-all text-center">
+                    <div class="bg-light-gray padding-30px-all md-padding-25px-all sm-padding-20px-all">
                     
 
                         <h5 class="margin-10px-bottom font-size24 md-font-size22 sm-font-size20 font-weight-600">Adresse:{{cmd_cli.client.adresse}}</h5>
@@ -292,10 +292,10 @@ a.text-lightred:hover {
                                         <strong class="margin-10px-left text-orange">{{det_cmd.Produit.nom}}</strong>
                                     </div>
                                     <div class="col-md-7 col-7">
-                                        <p>Quantiter:{{det_cmd.Produit.quantite}}</p>
+                                        <p>Quantiter:{{det_cmd.quantite}}</p>
                                     </div>
                                     <div class="col-md-7 col-7">
-                                        <p>Prix :{{det_cmd.Produit.prix}}</p>
+                                        <p>Prix :{{det_cmd.prixcommande}}</p>
                                     </div>
                                 </div>
 
