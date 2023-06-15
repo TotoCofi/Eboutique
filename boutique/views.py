@@ -177,7 +177,7 @@ def acceuil(request):
 def user_logout(request):
   logout(request)
   return redirect('/')
-#@login_required
+@login_required
 def user(request):
     rol= Roles.objects.all()
     users=Users.objects.select_related('role')
@@ -235,6 +235,7 @@ def user(request):
 
     
     return render(request,'user.html',{'roles':rol,'users':users})
+@login_required
 def client(request): 
     clients = Clients.objects.all() # on recupère tout les clients enregistrés dans la base de données
     if request.method == "POST":
@@ -249,7 +250,7 @@ def client(request):
             client = Clients(nom = nom,adresse = adresse,phone = phone,user = user ) 
             client.save()
     return render(request,'client.html',{'clients':clients})
-
+@login_required
 def categorie(request):
     categories = Categories.objects.all() # on recupère tout les catégorie enregistrés dans la base de données
     if request.method == "POST":
@@ -258,7 +259,7 @@ def categorie(request):
         categorie = Categories(nom = nom,user = user)
         categorie.save()
     return render(request,'categorie.html',{'categories':categories})
-
+@login_required
 def produit(request):
     produits = Produits.objects.all() # on recupère tout les produits enregistrés dans la base de données
     categories = Categories.objects.all()
@@ -278,7 +279,7 @@ def produit(request):
             produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
             produit.save()
     return render(request,'produit.html',{"categories":categories,"produits":produits})
-
+@login_required
 def update_client(request,id):
     client_u = get_object_or_404(Clients, pk = id)
     if request.method == "POST":
@@ -290,6 +291,7 @@ def update_client(request,id):
         return redirect('client')
 
     return render(request,'update_client.html',{'clients_u':client_u})
+@login_required
 def update_user(request,id):
     rol= Roles.objects.all()
     user = get_object_or_404(Users, pk = id)
@@ -310,7 +312,7 @@ def update_user(request,id):
             return redirect('user')
 
     return render(request,'update_user.html',{'user':user,'roles':rol})
-
+@login_required
 def update_categorie(request,id):
     categorie_u = get_object_or_404(Categories, pk = id)
     if request.method == "POST":
@@ -321,7 +323,7 @@ def update_categorie(request,id):
 
     return render(request,'update_categorie.html',{'categories_u':categorie_u})
  
-
+@login_required
 def update_produit(request,id):
     produit_u = get_object_or_404(Produits, pk = id)
     if request.method == "POST":
