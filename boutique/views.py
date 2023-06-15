@@ -1,4 +1,5 @@
 import json
+from urllib import request
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render ,get_object_or_404
@@ -370,3 +371,9 @@ def payement(request):
 @login_required
 def facture(request):
     return render(request,'facture.html')
+
+def detaille_commande(request,id):
+    cmd_id = get_object_or_404(Commandes,pk = id)
+    acheter = Acheter.objects.filter(commande = cmd_id).select_related('Produit')
+    
+    return render(request,'detaille_commande.html',{'det_cmd':acheter,'cmd_cli':cmd_id})
