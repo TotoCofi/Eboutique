@@ -375,3 +375,7 @@ def detaille_commande(request,id):
     acheter = Acheter.objects.filter(commande = cmd_id).select_related('Produit')
     
     return render(request,'detaille_commande.html',{'det_cmd':acheter,'cmd_cli':cmd_id})
+
+def detaille_payement(request,id_pay):
+    payement = Payements.objects.get(id = id_pay)
+    return render(request,'detaille_payement.html',{'payements':payement})
