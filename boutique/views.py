@@ -435,3 +435,10 @@ def detaille_commande(request,id):
     return render(request,'detaille_commande.html',{'det_cmd':acheter,'cmd_cli':cmd_id})
    else:
        return render(request,'401.html')   
+
+def detaille_payement(request,id_pay):
+   if permission(request,'caisse')== True: 
+    payement = Payements.objects.get(id = id_pay)
+    return render(request,'detaille_payement.html',{'payements':payement})
+   else:
+       return render(request,'401.html')   
