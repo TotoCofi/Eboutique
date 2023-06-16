@@ -39,7 +39,6 @@ urlpatterns = [
     path('del_acheter/',del_acheter,name='del_acheter/'),
     path('valid_achat/',valid_achat,name='valid_achat/'),
     path('payement',payement,name='payement'),
-    path('facture',facture,name='facture'),
     path('update_client/<int:id>',update_client,name='update_client'),
     path('update_user/<int:id>',update_user,name='update_user'),
     path('update_categorie/<int:id>',update_categorie,name='update_categorie'),

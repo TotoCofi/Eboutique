@@ -14,8 +14,24 @@ import re
 import random
 import string
 from django.core import serializers
-
+@login_required
+def permission(request,type):
+    user=Users.objects.select_related('role').get(id=request.user.id)
+    if user.role.nom =='Admin':
+        return True
+    elif type=='caisse' and user.role.nom=="Caissier":
+    
+        return True
+    elif type=='gerant' and user.role.nom=="Gerant":
+        
+        return True
+    
+    else:
+        return False
+    
+@login_required
 def add_acheter(request):
+  
     pro_id= request.POST.get('pro_id')
     cli_id= request.POST.get('cli_id')
     qte= int(request.POST.get('qte'))
@@ -45,7 +61,7 @@ def add_acheter(request):
         return JsonResponse({'commande_id': commande.id, 'acheter': serialized_achat}, safe=False)
     else:  
        return JsonResponse({'produit':'prix unitaire'})   
-
+@login_required
 def del_acheter(request):
     id= request.POST.get('id')
     acheter =Acheter.objects.filter(id=id).first()
@@ -60,6 +76,7 @@ def del_acheter(request):
             return JsonResponse({'resp':'true','produit':produit_data,'prix':prix}, safe=False)
         
     return JsonResponse({'resp':'false'}) 
+@login_required
 def valid_achat(request):
     commande_id= request.POST.get('commande_id')
     mode_id= request.POST.get('mode')
@@ -74,7 +91,7 @@ def valid_achat(request):
         commande.save()
         return JsonResponse({'resp':'true'}) 
     return JsonResponse({'resp':'false'}) 
-
+@login_required
 def prix_unitaire(request):
     pro_id= request.POST.get('id')
     produit =Produits.objects.filter(id=pro_id).first()
@@ -180,6 +197,7 @@ def user_logout(request):
   return redirect('/')
 @login_required
 def user(request):
+   if permission(request,'admin')== True: 
     rol= Roles.objects.all()
     users=Users.objects.select_related('role')
     if request.method == 'POST':
@@ -232,12 +250,13 @@ def user(request):
                 
                     message = "role innexistant"
                     return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
-
-
-    
     return render(request,'user.html',{'roles':rol,'users':users})
+   else:
+       return render(request,'401.html')
+       
 @login_required
-def client(request): 
+def client(request):
+   if permission(request,'caisse')== True: 
     clients = Clients.objects.all() # on recupère tout les clients enregistrés dans la base de données
     if request.method == "POST":
         nom = request.POST['nom']
@@ -251,8 +270,11 @@ def client(request):
             client = Clients(nom = nom,adresse = adresse,phone = phone,user = user ) 
             client.save()
     return render(request,'client.html',{'clients':clients})
+   else:
+       return render(request,'401.html')   
 @login_required
 def categorie(request):
+   if permission(request,'gerant')== True: 
     categories = Categories.objects.all() # on recupère tout les catégorie enregistrés dans la base de données
     if request.method == "POST":
         nom = request.POST['nom']
@@ -260,8 +282,11 @@ def categorie(request):
         categorie = Categories(nom = nom,user = user)
         categorie.save()
     return render(request,'categorie.html',{'categories':categories})
+   else:
+       return render(request,'401.html')  
 @login_required
 def produit(request):
+   if permission(request,'gerant')== True: 
     produits = Produits.objects.all() # on recupère tout les produits enregistrés dans la base de données
     categories = Categories.objects.all()
     if request.method == "POST":
@@ -280,8 +305,11 @@ def produit(request):
             produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
             produit.save()
     return render(request,'produit.html',{"categories":categories,"produits":produits})
+   else:
+       return render(request,'401.html')  
 @login_required
 def update_client(request,id):
+   if permission(request,"caisse")== True:   
     client_u = get_object_or_404(Clients, pk = id)
     if request.method == "POST":
         client_u.nom = request.POST['nom']
@@ -292,8 +320,11 @@ def update_client(request,id):
         return redirect('client')
 
     return render(request,'update_client.html',{'clients_u':client_u})
+   else:
+       return render(request,'401.html')
 @login_required
 def update_user(request,id):
+   if permission(request,'admin')== True: 
     rol= Roles.objects.all()
     user = get_object_or_404(Users, pk = id)
     if request.method == "POST":
@@ -313,8 +344,11 @@ def update_user(request,id):
             return redirect('user')
 
     return render(request,'update_user.html',{'user':user,'roles':rol})
+   else:
+       return render(request,'401.html')  
 @login_required
 def update_categorie(request,id):
+   if permission(request,'gerant')== True: 
     categorie_u = get_object_or_404(Categories, pk = id)
     if request.method == "POST":
         categorie_u.nom = request.POST['nom']
@@ -323,9 +357,12 @@ def update_categorie(request,id):
         return redirect('categorie')
 
     return render(request,'update_categorie.html',{'categories_u':categorie_u})
+   else:
+       return render(request,'401.html')  
  
 @login_required
 def update_produit(request,id):
+   if permission(request,'gerant')== True: 
     produit_u = get_object_or_404(Produits, pk = id)
     if request.method == "POST":
         produit_u.nom = request.POST['nom']
@@ -338,42 +375,63 @@ def update_produit(request,id):
         return redirect('produit')
 
     return render(request,'update_produit.html',{'produits_u':produit_u})
- 
+   else:
+       return render(request,'401.html')   
+@login_required
 def delete_client(request,id):
+   if permission(request,'caisse')== True: 
     client_d = get_object_or_404(Clients, pk = id)
     client_d.delete()
     return redirect('client')
+   else:
+       return render(request,'401.html')   
 
-
+@login_required
 def delete_categorie(request,id):
+   if permission(request,'gerant')== True: 
     categorie_d = get_object_or_404(Categories, pk = id)
     categorie_d.delete()
     return redirect('categorie')
-
+   else:
+       return render(request,'401.html')   
+@login_required
 def delete_produit(request,id):
+   if permission(request,'gerant')== True: 
     produit_d = get_object_or_404(Produits, pk = id)
     produit_d.delete()
     return redirect('produit')
-
+   else:
+       return render(request,'401.html')   
+@login_required
 def add_commande(request):
+   if permission(request,'caisse')== True:  
     clients = Clients.objects.all()
     produits = Produits.objects.all()
     Modes=Mode_payements.objects.all()
     return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits,"modes":Modes})
+   else:
+       return render(request,'401.html')  
 @login_required
 def commande(request):
+   if permission(request,'caisse')== True:   
     commande = Commandes.objects.filter(prixtotal__gt=0).select_related('client','user')
     return render(request,'commande.html',{'commandes':commande})
+   else:
+       return render(request,'401.html') 
 @login_required
 def payement(request):
+   if permission(request,'caisse')== True:    
     payement= Payements.objects.select_related('commande__client','user')
     return render(request,'payement.html',{'payements':payement})
-@login_required
-def facture(request):
-    return render(request,'facture.html')
+   else:
+       return render(request,'401.html')
 
+@login_required
 def detaille_commande(request,id):
+   if permission(request,'caisse')== True: 
     cmd_id = get_object_or_404(Commandes,pk = id)
     acheter = Acheter.objects.filter(commande = cmd_id).select_related('Produit')
     
     return render(request,'detaille_commande.html',{'det_cmd':acheter,'cmd_cli':cmd_id})
+   else:
+       return render(request,'401.html')   
