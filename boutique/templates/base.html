@@ -50,29 +50,52 @@
                                 Acceuil
                             </a>
                             <div class="sb-sidenav-menu-heading">Interface</div>  
+<<<<<<< HEAD
                             {% if request.user.role.nom == "Admin" %}
                             <a class="nav-link" href="{% url 'user' %}">Utilisateurs</a>
                                    {% endif %}
                                    {% if  request.user.role.nom == "Admin" or   request.user.role.nom == "Caissier"%}
+=======
+                            {% if request.user.role_id  == 4  %}
+                            <a class="nav-link" href="{% url 'user' %}">Utilisateurs</a>
+                                   {% endif %}
+                                   {% if request.user.role_id  == 4 or request.user.role_id  == 2 %}
+>>>>>>> c60d91f9793f17f8c3fd69cd621fb32e9b33019a
                             <a class="nav-link" href="{% url 'client' %}">Client</a>
                             {% endif %}
 
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                               
+<<<<<<< HEAD
                             
                                 {% if  request.user.role.nom == "Admin" or   request.user.role.nom == "Gerant" %}
                                 <a class="nav-link" href="{% url 'categorie' %}">Categorie</a>
 
                                 {% endif %}     
                                 {% if  request.user.role.nom == "Admin" or   request.user.role.nom == "Gerant" %}
+=======
+                              
+                                {% if request.user.role_id  == 4 or request.user.role_id  == 3 %}
+                                <a class="nav-link" href="{% url 'categorie' %}">Categorie</a>
+
+                                {% endif %}     
+                                {% if request.user.role_id  == 4 or request.user.role_id  == 3 %}
+>>>>>>> c60d91f9793f17f8c3fd69cd621fb32e9b33019a
                               
                                             <a class="nav-link" href="{% url 'produit' %}">Produit</a>
 
                                 {% endif %}
+<<<<<<< HEAD
                                 {% if  request.user.role.nom == "Admin" or   request.user.role.nom == "Caissier"%}
                                             <a class="nav-link" href="{% url 'commande' %}">Commande</a>
                                             {% endif %}
                                             {% if  request.user.role.nom == "Admin" or   request.user.role.nom == "Caissier"%}
+=======
+                                {% if request.user.role_id  == 4 or request.user.role_id  == 2 %}
+                                            <a class="nav-link" href="{% url 'commande' %}">Commande</a>
+                                            {% endif %}
+                                            {% if request.user.role_id  == 4 or request.user.role_id  == 2 %}
+>>>>>>> c60d91f9793f17f8c3fd69cd621fb32e9b33019a
                                             <a class="nav-link" href="{% url 'payement' %}">Payement</a>
                                             {% endif %}
                                             

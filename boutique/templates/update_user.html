@@ -42,16 +42,36 @@
                                             <div class="form-group col-6 flex-column d-flex"> <label class="form-control-label px-3">Email<span class="text-danger"> *</span></label> <input type="email" id="ans" value="{{user.email}}"  name="email" placeholder="" onblur="validate(6)"> </div>
                                       
                                             <div class="form-group col-6 flex-column d-flex"> <label class="form-control-label px-3">Phone<span class="text-danger"> *</span></label> <input type="text" id="ans" value="{{user.phone}}"  name="phone" placeholder="" onblur="validate(6)"> </div>
-                                        </div>  <div class="row justify-content-between text-left">
+                                        </div>  
+                                        <div class="row justify-content-between text-left">
                                            
                                             <div class="form-group col-12 flex-column d-flex">
                                                 <select class="form-control" name='role' >
                                                     <option>roles</option>
                                                     {% for role in roles %}
-                                                    <option value="{{role.id}}"> {{role.nom}}</option>
+                                                    {% if user.role.id == role.id %}
+                                                    <option value="{{role.id}}" selected > {{role.nom}}</option>
+                                                    {% else %}
+                                                    <option value="{{role.id}}" > {{role.nom}}</option>
+                                                    {% endif %}
                                                      {% endfor %}
                                                              </select>
                                             </div>
+                                            
+                                        </div><br>
+                                        <div class="row justify-content-between text-left">
+                                           
+                                            <div class="form-group col-12 flex-column d-flex">
+                                                <select class="form-control" name='statut' >
+                                                   
+                                                    <option value="0" {% if user.is_staff == 0 %}selected  {% endif %}> Desactivé </option>
+
+                                                      <option value="1" {% if user.is_staff == 1 %}selected  {% endif %}> Activé </option>
+                                                   
+                                                    
+                                                             </select>
+                                            </div>
+                                            
                                         </div>
                                         <div class="row justify-content-end">
                                             <div class="form-group col-sm-12  "> <button type="submit" class="btn-block btn btn-warning">Valider</button> </div>
