@@ -36,6 +36,7 @@ class Clients(models.Model):
 class Commandes(models.Model):
     prixtotal=models.IntegerField(default=0)
     client= models.ForeignKey('Clients', on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
     user= models.ForeignKey('Users', on_delete=models.CASCADE)
     created_at =models.DateTimeField(default=timezone.now)
 

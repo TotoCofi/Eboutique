@@ -9,7 +9,7 @@
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Commande</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item "><a class="text-warning" href="index.html">Acceuil</a></li>
+                        <li class="breadcrumb-item "><a class="text-warning" href="{% url 'acceuil' %}">Acceuil</a></li>
                         <li class="breadcrumb-item active">Commande</li>
                     </ol>
                     <div class="mb-4">
@@ -31,7 +31,7 @@
                                         <th>Commande id</th>
                                         <th>Nom client</th>
                                         <th>Nom utilisateur</th>
-                                        
+                                        <th>Statut</th>
                                         <th>Start date</th>
                                         <th>Action</th>
                                         
@@ -44,6 +44,16 @@
                                         <td>{{commande.id}}</td>
                                         <td>{{commande.client.nom}}</td>
                                         <td>{{commande.user.first_name}} {{commande.user.last_name}}</td>
+                                        <td>{% if commande.is_active == 0 %}
+                                          <div class="badge bg-danger"> 
+                                              Bloquer
+                   </div>
+                                       {% else %} 
+                                       <div class="badge bg-success"> 
+                                          Actif
+               </div>
+                                       {% endif %}
+                                      </td>
                                         <td>{{commande.created_at}}</td>
                                         <td> 
                                           <a href="{% url 'det_commande' commande.id %}" class="btn btn-outline-warning"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">

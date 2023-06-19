@@ -28,69 +28,6 @@ def permission(request,type):
     
     else:
         return False
-    
-@login_required
-def add_acheter(request):
-  
-    pro_id= request.POST.get('pro_id')
-    cli_id= request.POST.get('cli_id')
-    qte= int(request.POST.get('qte'))
- 
-    commande_id= request.POST.get('commande_id')
-    produit =Produits.objects.filter(id=pro_id).first()
-    client =Clients.objects.filter(id=cli_id).first()
-    
-
-
-    commande =Commandes.objects.filter(id=commande_id).first()
-
-    if not commande:
-       if client:
-          user=request.user
-          commande =Commandes(client=client,user=user)    
-          commande.save()
-    if produit and client:
-        produit.quantite-=qte
-        produit.save()
-        prixcommande=int(qte * produit.prix)
-        acheter=Acheter(commande=commande,Produit=produit,quantite=qte,prixcommande=prixcommande)
-        acheter.save()
-        achat = Acheter.objects.filter(commande=commande).select_related('Produit').values('quantite', 'prixcommande','Produit__nom', 'Produit__prix','id')
-        serialized_achat = json.dumps(list(achat))
-
-        return JsonResponse({'commande_id': commande.id, 'acheter': serialized_achat}, safe=False)
-    else:  
-       return JsonResponse({'produit':'prix unitaire'})   
-@login_required
-def del_acheter(request):
-    id= request.POST.get('id')
-    acheter =Acheter.objects.filter(id=id).first()
-    qte= int(request.POST.get('qte'))
-    produit=Produits.objects.filter(id=acheter.Produit_id).first()
-    if acheter:
-        prix= acheter.prixcommande
-        if acheter.delete():
-            produit.quantite+=qte
-            produit.save()
-            produit_data = {'nom': produit.nom, 'id': produit.id}
-            return JsonResponse({'resp':'true','produit':produit_data,'prix':prix}, safe=False)
-        
-    return JsonResponse({'resp':'false'}) 
-@login_required
-def valid_achat(request):
-    commande_id= request.POST.get('commande_id')
-    mode_id= request.POST.get('mode')
-    total= request.POST.get('total')
-    commande =Commandes.objects.filter(id=commande_id).first()
-    mode =Mode_payements.objects.filter(id=mode_id).first()
-    user=request.user
-    if commande:
-        commande.prixtotal=total
-        payement=Payements(commande=commande ,mode_payement=mode,user=user)
-        payement.save()
-        commande.save()
-        return JsonResponse({'resp':'true'}) 
-    return JsonResponse({'resp':'false'}) 
 @login_required
 def prix_unitaire(request):
     pro_id= request.POST.get('id')
@@ -406,15 +343,60 @@ def delete_produit(request,id):
 def add_commande(request):
    if permission(request,'caisse')== True:  
     clients = Clients.objects.all()
-    produits = Produits.objects.all()
+    produits = Produits.objects.filter(quantite__gt=0).all()
     Modes=Mode_payements.objects.all()
+    if request.method == "POST":
+        cli_id= request.POST.get('client')
+        total=request.POST.get('total')
+        client =get_object_or_404(Clients,pk =cli_id)
+        pro_id= request.POST.getlist('produit')
+        qte= request.POST.getlist('qte_commande')
+        prix= request.POST.getlist('prixtotal')
+        taille_liste = len( pro_id)
+        mode_id= request.POST.get('mode')
+        user=request.user
+        mode =get_object_or_404(Mode_payements,pk =mode_id)
+        if taille_liste!=0:   
+
+            if client:
+                 if mode:
+                    commande =Commandes(client=client,user=user,prixtotal=total)
+                    commande.save()
+                    payement=Payements(commande=commande ,mode_payement=mode,user=user)
+                    payement.save()   
+                 else:
+             
+                    message = "Erreur de mode de payement"
+                        
+                    return render(request,'Ajout_commande.html',{'error_messages': message,'cli':clients,'pros':produits,"modes":Modes})    
+            
+            else:
+               message = "Client introuvable"
+               return render(request,'Ajout_commande.html',{'error_messages': message,'cli':clients,'pros':produits,"modes":Modes})
+
+
+            for i in range(taille_liste):
+                
+                produit =Produits.objects.filter(id=pro_id[i]).first()
+                if produit:
+                        produit.quantite-= int(qte[i])
+                        produit.save()
+                        prixcommande=prix[i]
+                        acheter=Acheter(commande=commande,Produit=produit,quantite=qte[i],prixcommande=prixcommande)
+                        acheter.save() 
+            message = "Commande ajouter"
+            return render(request,'Ajout_commande.html',{'messages': message,'cli':clients,'pros':produits,"modes":Modes})
+
     return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits,"modes":Modes})
+   
+   
+   
    else:
        return render(request,'401.html')  
 @login_required
 def commande(request):
    if permission(request,'caisse')== True:   
-    commande = Commandes.objects.filter(prixtotal__gt=0).select_related('client','user')
+    commande = Commandes.objects.select_related('client','user')
     return render(request,'commande.html',{'commandes':commande})
    else:
        return render(request,'401.html') 

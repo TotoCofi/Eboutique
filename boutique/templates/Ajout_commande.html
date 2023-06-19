@@ -9,7 +9,7 @@
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Commande</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item "><a class="text-warning" href="index.html">Acceuil</a></li>
+                        <li class="breadcrumb-item "><a class="text-warning" href="{% url 'acceuil' %}">Acceuil</a></li>
                         <li class="breadcrumb-item active">Ajout Commande</li>
                     </ol>
                  
@@ -20,7 +20,8 @@
                       <div class="row">
                         <div class="col-xl-4">
                 
-                          <div class="card"> {% if error_messages %}
+                          <div class="card"> 
+                            {% if error_messages %}
                             <div class="badge bg-danger"> 
                          
                                  {{error_messages}}</div>
@@ -34,34 +35,15 @@
                 
                           <div>
                             
-                                    <div class="row justify-content-between mb-3 text-left">
-                                        <div class="form-group mb-3 col-12 flex-column d-flex"> 
-                                           
-                                            <select class="form-select" name="client" id='cli_id' aria-label="Default select example"required>
-                                                <option selected>Client</option>
-                                                {% for c in cli %}
-                                         
-                                                <option value="{{c.id}}">{{c.nom}}</option>
-                                             {% endfor %}
-                                              
-                                              </select> </div> <div class="form-group col-12 flex-column d-flex"> 
-                                           
-                                                <select class="form-select" name="mode" id='mode_id' aria-label="Default select example"required>
-                                                    <option selected>Mode de payement</option>
-                                                    {% for c in modes %}
-                                             
-                                                    <option value="{{c.id}}">{{c.mode}}</option>
-                                                 {% endfor %}
-                                                  
-                                                  </select> </div>
-                                    </div>
+                                  
                                     <div class="row justify-content-between mb-3 text-left">
                                         <div class="form-group col-sm-6 flex-column d-flex"> 
                                           <select class="form-select" name="client" id='pro_id'onchange='prix_unitaire()' aria-label="Default select example"required>
                                             <option selected>Produit</option>
                                             {% for c in pros %}
                                      
-                                            <option value="{{c.id}}">{{c.nom}} </option>
+                                            <option value="{{c.id}}" >{{c.nom}} </option>
+
                                          {% endfor %}
                                           
                                           </select> </div>
@@ -80,7 +62,7 @@
                                   </div>
                                     
                                     <div class="row justify-content-between ">
-                                        <div class="form-group col-sm-12  "> <button type="submit" onclick='sav()' class="btn-block btn btn-warning">Valider</button> </div>
+                                        <div class="form-group col-sm-12  "> <button type="submit" onclick='sav()' class="btn-block btn btn-warning">Ajouter</button> </div>
                                     </div>
                        
                             </div>
@@ -97,8 +79,14 @@
                          
                               <div class="tab-content pt-2">
                 
-                                
-                
+                                <form method='post' action="">
+                                  {% csrf_token %}
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shopping-bag" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z"></path>
+                                    <path d="M9 11v-5a3 3 0 0 1 6 0v5"></path>
+                                 </svg>
+                                 <span class="badge bg-primary " id='nb'>0</span>
                                 <table  class="table">
                                     <thead>
                                         <tr>
@@ -115,7 +103,36 @@
                                     
                                     </tbody>
                                 </table>
-                
+                                <div class="row justify-content-between mb-3 text-left">
+                                    <div class="form-group mb-3 col-6 flex-column d-flex"> 
+                                       
+                                        <select class="form-select" name="client" id='cli_id' aria-label="Default select example"required>
+                                            <option selected>Client</option>
+                                            {% for c in cli %}
+                                     
+                                            <option value="{{c.id}}">{{c.nom}}</option>
+                                         {% endfor %}
+                                          
+                                          </select> </div> 
+                             
+                                <div class="form-group col-6 flex-column d-flex"> 
+
+                                           
+                                  <select class="form-select" name="mode" id='mode_id' aria-label="Default select example"required>
+                                      <option >Mode de payement</option>
+                                      {% for c in modes %}
+                               
+                                      <option value="{{c.id}}">{{c.mode}}</option>
+                                   {% endfor %}
+                                    
+                                    </select> </div> <div class="form-group col-6 flex-column d-flex"> 
+                      <button type="submit"  
+                   
+                     style="padding: 5px,5px,5px,5px;"  class="btn btn-outline-warning text-dark ">Valider
+                       </button>    
+                      </form>
+                  </div>
+                </div>
                               </div><!-- End Bordered Tabs -->
                 
                             </div>
@@ -124,12 +141,7 @@
                         </div>
                       </div>
                     </section>
-                    <div class="mb-4">
-                      <button type="button"  
                    
-                     style="padding: 5px,5px,5px,5px;" onclick='payement()' class="btn btn-outline-warning text-dark m-5">TERMINER
-                       </button>    
-                  </div>
                   </main><!-- End #main -->
                 {% include   "footer.html" %}
               
@@ -192,7 +204,7 @@ document.getElementById('pt').innerHTML= pu * document.getElementById('qte').val
 
 }else{
   document.getElementById('pt').innerHTML='la quantiter est superieur au stock'
-  document.getElementById('qte').value=null
+  document.getElementById('qte').value=''
 }
 
 
@@ -203,37 +215,9 @@ document.getElementById('pt').innerHTML= pu * document.getElementById('qte').val
 
 
 <script>
-  let commande_id=0
-
-function payement(){
- let mode= document.getElementById('mode_id').value
-  $.ajax({
-    url: '/valid_achat/',  // URL de la vue pour supprimer l'utilisateur
-    type: 'POST',
-    data: {
-      
-      'total':$('.total').text(),
-      'commande_id':commande_id,
-      'mode':mode,
-      'csrfmiddlewaretoken': '{{ csrf_token }}'
-    },
-    
-    success: function(response) {
-      if(response.resp=='true')
-      {
-        window.location.pathname = "payement";
-      }
-    },
-    error: function(xhr, textStatus, errorThrown) {
-      // Traitement en cas d'erreur lors de la suppression de l'utilisateur
-      console.log(errorThrown);
-    }
-  });
-
-
-}
-
-
+     
+var total=0
+var nb=0
     function sav()
     {
       let pro_id=document.getElementById('pro_id').value
@@ -241,75 +225,47 @@ function payement(){
       let cli_id=parseInt(document.getElementById('cli_id').value)
   
       let  qte = document.getElementById('qte').value
-      if(pro_id=='' || cli_id=='' || qte =='')
+      if(document.getElementById('pro_id').selectedIndex == 0  || qte=='')
       {
         alert('Veuillez remplir tout les champs')
       }else
       {
 
-      $.ajax({
-        url: '/add_acheter/',  // URL de la vue pour supprimer l'utilisateur
-        type: 'POST',
-        data: {
-          'pro_id': pro_id,
-          'cli_id': cli_id,
-          'qte':qte,
-          'commande_id':commande_id,
-          'csrfmiddlewaretoken': '{{ csrf_token }}'
-        },
-        
-        success: function(response) {
-          
-          $('#tableBody').empty();
-          commande_id=response.commande_id
      
-  var acheterData = JSON.parse(response.acheter);
-var total=0
-  $.each(acheterData, function(index, acheter) {
+          
+var pro_nom= $('#pro_id').find(':selected').text()
+var pu=parseInt(document.getElementById('pu').innerHTML)
+var pt=parseInt(document.getElementById('pt').innerHTML)
           var row = $('<tr>'); 
-            // Ajouter les cellules <td> avec les valeurs appropriées
-            var produitCell = $('<td>').text(acheter.Produit__nom);
-            var quantiteCell = $('<td>').text(acheter.quantite);
-            var prixUnitaireCell = $('<td>').text(acheter.Produit__prix );
-            var prixTotalCell = $('<td>').text(acheter.prixcommande);
-              total += acheter.prixcommande;
+     
+            var produitCell = $('<td>').text(pro_nom);
+              produitCell.append($('<input>').val(pro_id).attr('name', 'produit').prop('hidden', true))
+            var quantiteCell = $('<td>').text(qte);
+              quantiteCell.append($('<input>').val(qte).attr('name', 'qte_commande').prop('hidden', true))
+            var prixUnitaireCell = $('<td>').text(pu);
+            var prixTotalCell = $('<td>').text(pt);
+              prixTotalCell.append($('<input>').val(pt).attr('name', 'prixtotal').prop('hidden', true))
+              
+              total += pt;
               var deleteIcon = $('<i>').addClass('fas fa-trash-alt'); 
                  var btn =$('<button>').addClass('btn btn-da')  
                   
                   
                   btn.click(function() {
-                    var icon = $(this); 
-                    $.ajax({
-                      url: '/del_acheter/',  // URL de la vue pour supprimer l'utilisateur
-                      type: 'POST',
-                      data: {
-                        'id':acheter.id,
-                        'qte':acheter.quantite,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                      },
-                      
-                      success: function(response) {
-                        if(response.resp=='true')
-                        {
+                  var icon = $(this);                  
+                    
                    icon.closest('tr').remove();
-              total-=response.prix
+              total-=pt
               $('.total').text(total)
+              $('.total').append($('<input>').val(total).attr('name', 'total').prop('hidden', true))
+
                     $('#pro_id').append($('<option>', {
-                      value: response.produit.id,
-                      text: response.produit.nom
+                      value: pro_id,
+                      text: pro_nom
                   }));
-                  
-}
-                  },
-                  error: function(xhr, textStatus, errorThrown) {
-                    // Traitement en cas d'erreur lors de la suppression de l'utilisateur
-                    console.log(errorThrown);
-                  }
-                });
-
-
-
-                });
+                  nb-=1
+                  $('#nb').text(nb)
+                })
                 btn.append(deleteIcon)
                 var actionCell = $('<td>').append(btn);
            
@@ -318,12 +274,15 @@ var total=0
             row.append(produitCell, quantiteCell, prixUnitaireCell, prixTotalCell, actionCell);
   
             // Ajouter la ligne au <tbody>
+            $('#tableBody tr').last().remove();
             $('#tableBody').append(row);
+            nb+=1
+            $('#nb').text(nb)
          
-          });
           var row = $('<tr>'); 
             var t=$('<th>').text("TOTAL");
   var totalCell = $('<td>').text(total);
+    totalCell.append($('<input>').val(total).attr('name', 'total').prop('hidden', true))
     totalCell.addClass('total')
     row.append(t,totalCell)
             // Ajouter la cellule de total à la dernière colonne de chaque ligne du tableau
@@ -343,17 +302,12 @@ var total=0
           }
         
            document.getElementById('pro_id').selectedIndex = 0
-      document.getElementById('qte').value=null
+      document.getElementById('qte').value=''
          
   document.getElementById('pt').innerHTML='Prix unitaire'
   document.getElementById('pu').innerHTML='Prix total'
           
-        },
-        error: function(xhr, textStatus, errorThrown) {
-          // Traitement en cas d'erreur lors de la suppression de l'utilisateur
-          console.log(errorThrown);
-        }
-      });
+       
     }
   
       }
