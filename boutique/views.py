@@ -1,5 +1,4 @@
 import json
-from urllib import request
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render ,get_object_or_404
@@ -61,6 +60,7 @@ def add_acheter(request):
         return JsonResponse({'commande_id': commande.id, 'acheter': serialized_achat}, safe=False)
     else:  
        return JsonResponse({'produit':'prix unitaire'})   
+
 @login_required
 def del_acheter(request):
     id= request.POST.get('id')
@@ -76,6 +76,7 @@ def del_acheter(request):
             return JsonResponse({'resp':'true','produit':produit_data,'prix':prix}, safe=False)
         
     return JsonResponse({'resp':'false'}) 
+
 @login_required
 def valid_achat(request):
     commande_id= request.POST.get('commande_id')
@@ -91,6 +92,7 @@ def valid_achat(request):
         commande.save()
         return JsonResponse({'resp':'true'}) 
     return JsonResponse({'resp':'false'}) 
+
 @login_required
 def prix_unitaire(request):
     pro_id= request.POST.get('id')
@@ -146,6 +148,7 @@ def codemail(request,code,email):
             request.session['code']=code
             durée_expiration = timedelta(hours=2)  # Durée d'expiration de 2 heures
             request.session.set_expiry(durée_expiration.total_seconds())
+
 def acceuil(request):
     if not request.user.id:
         if request.method == 'POST':
@@ -157,34 +160,37 @@ def acceuil(request):
             user= Users.objects.filter(email=email).first()
             print(user)
             if user is not None:
-                    if user.is_active==0:
-                        if user.check_password(password):
-                        
-                
-                            code = generate_unique_code()
-                            user.code=code
-                            
-                            codemail(request,code,user.email)
-                        
-                            return redirect('verification')
-
-                        else:
-                            message = "Email ou mot de passe non valide"
-                            return render(request, 'login.html',{'error_messages': message})
+                    if user.is_staff == 0:
+                       messages.error(request,'Votre Compte est désactivé')
                     else:
-                        #user = authenticate(request,email=email, password=password)
-                        print(user)
-                        if user is not None:
+                        if user.is_active==0:
                             if user.check_password(password):
-                                login(request, user)  
-                                return redirect('/')
+                            
+                    
+                                code = generate_unique_code()
+                                user.code=code
+                                
+                                codemail(request,code,user.email)
+                            
+                                return redirect('verification')
+
                             else:
-                                message = "Mot de passe non valide"
-                            return render(request, 'login.html',{'error_messages': message})
+                                message = "Email ou mot de passe non valide"
+                                return render(request, 'login.html',{'error_messages': message})
                         else:
-                            message = "Email ou mot de passe non valide"
-                            return render(request, 'login.html',{'error_messages': message,} )
-                
+                                #user = authenticate(request,email=email, password=password)
+                                print(user)
+                                if user is not None:
+                                    if user.check_password(password):
+                                        login(request, user)  
+                                        return redirect('/')
+                                    else:
+                                        message = "Mot de passe non valide"
+                                    return render(request, 'login.html',{'error_messages': message})
+                                else:
+                                    message = "Email ou mot de passe non valide"
+                                    return render(request, 'login.html',{'error_messages': message,} )
+                        
             else:
                     message = "Email  non valide"
                     return render(request, 'login.html',{'error_messages': message,})
@@ -192,25 +198,35 @@ def acceuil(request):
         return render(request,'login.html')
     else:
        return render(request,'index.html')
+
 def user_logout(request):
   logout(request)
   return redirect('/')
+
 @login_required
 def user(request):
    if permission(request,'admin')== True: 
     rol= Roles.objects.all()
     users=Users.objects.select_related('role')
     if request.method == 'POST':
-    
-       email=request.POST.get('email')
-       user = Users.objects.filter(email=email).first()
-       if user:
-         message = "Email existe déja"
-         return render(request, 'user.html',{'error_messages': message})
+        if 'mdp' in request.POST:
+            user=Users.objects.filter(id=request.POST['id']).first()
+            if request.POST['mdp'] == request.POST['c_mdp']:
+                user.set_password(request.POST['mdp'])
+                user.save()
+                messages.success(request,'Le mot de passe à été modifier avec succes')
+            else:
+                messages.error(request,'Les mots de passe ne sont pas identique')
+        else: 
+            email=request.POST.get('email')
+            user = Users.objects.filter(email=email).first()
+            if user:
+                message = "Email existe déja"
+                return render(request, 'user.html',{'error_messages': message})
        
-       else : 
-            benin_regex = r"^(\+229)?\d{8}$"
-            phone=request.POST.get('phone')
+            else : 
+                benin_regex = r"^(\+229)?\d{8}$"
+                phone=request.POST.get('phone')
 
             if not re.match(benin_regex, phone):
                 message = "Numéro de téléphone invalide ou non du Bénin"
@@ -272,6 +288,7 @@ def client(request):
     return render(request,'client.html',{'clients':clients})
    else:
        return render(request,'401.html')   
+
 @login_required
 def categorie(request):
    if permission(request,'gerant')== True: 
@@ -284,6 +301,7 @@ def categorie(request):
     return render(request,'categorie.html',{'categories':categories})
    else:
        return render(request,'401.html')  
+
 @login_required
 def produit(request):
    if permission(request,'gerant')== True: 
@@ -307,6 +325,7 @@ def produit(request):
     return render(request,'produit.html',{"categories":categories,"produits":produits})
    else:
        return render(request,'401.html')  
+
 @login_required
 def update_client(request,id):
    if permission(request,"caisse")== True:   
@@ -322,13 +341,13 @@ def update_client(request,id):
     return render(request,'update_client.html',{'clients_u':client_u})
    else:
        return render(request,'401.html')
+
 @login_required
 def update_user(request,id):
    if permission(request,'admin')== True: 
     rol= Roles.objects.all()
     user = get_object_or_404(Users, pk = id)
     if request.method == "POST":
-      
             benin_regex = r"^(\+229)?\d{8}$"
             phone=request.POST.get('phone')
 
@@ -340,12 +359,14 @@ def update_user(request,id):
             user.role_id= request.POST.get('role')
             user.email = request.POST["email"]
             user.phone = request.POST["phone"]
+            user.is_staff= request.POST['statut']
             user.save()
             return redirect('user')
 
     return render(request,'update_user.html',{'user':user,'roles':rol})
    else:
        return render(request,'401.html')  
+
 @login_required
 def update_categorie(request,id):
    if permission(request,'gerant')== True: 
@@ -377,6 +398,7 @@ def update_produit(request,id):
     return render(request,'update_produit.html',{'produits_u':produit_u})
    else:
        return render(request,'401.html')   
+
 @login_required
 def delete_client(request,id):
    if permission(request,'caisse')== True: 
@@ -394,6 +416,7 @@ def delete_categorie(request,id):
     return redirect('categorie')
    else:
        return render(request,'401.html')   
+
 @login_required
 def delete_produit(request,id):
    if permission(request,'gerant')== True: 
@@ -402,6 +425,7 @@ def delete_produit(request,id):
     return redirect('produit')
    else:
        return render(request,'401.html')   
+
 @login_required
 def add_commande(request):
    if permission(request,'caisse')== True:  
@@ -411,6 +435,7 @@ def add_commande(request):
     return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits,"modes":Modes})
    else:
        return render(request,'401.html')  
+
 @login_required
 def commande(request):
    if permission(request,'caisse')== True:   
@@ -418,6 +443,7 @@ def commande(request):
     return render(request,'commande.html',{'commandes':commande})
    else:
        return render(request,'401.html') 
+
 @login_required
 def payement(request):
    if permission(request,'caisse')== True:    
@@ -442,3 +468,4 @@ def detaille_payement(request,id_pay):
     return render(request,'detaille_payement.html',{'payements':payement})
    else:
        return render(request,'401.html')   
+   

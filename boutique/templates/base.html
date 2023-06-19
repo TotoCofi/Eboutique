@@ -50,29 +50,29 @@
                                 Acceuil
                             </a>
                             <div class="sb-sidenav-menu-heading">Interface</div>  
-                            {% if request.user.role_id  == 1  %}
+                            {% if request.user.role_id  == 4  %}
                             <a class="nav-link" href="{% url 'user' %}">Utilisateurs</a>
                                    {% endif %}
-                                   {% if request.user.role_id  == 1 or request.user.role_id  == 2 %}
+                                   {% if request.user.role_id  == 4 or request.user.role_id  == 2 %}
                             <a class="nav-link" href="{% url 'client' %}">Client</a>
                             {% endif %}
 
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                               
                               
-                                {% if request.user.role_id  == 1 or request.user.role_id  == 3 %}
+                                {% if request.user.role_id  == 4 or request.user.role_id  == 3 %}
                                 <a class="nav-link" href="{% url 'categorie' %}">Categorie</a>
 
                                 {% endif %}     
-                                {% if request.user.role_id  == 1 or request.user.role_id  == 3 %}
+                                {% if request.user.role_id  == 4 or request.user.role_id  == 3 %}
                               
                                             <a class="nav-link" href="{% url 'produit' %}">Produit</a>
 
                                 {% endif %}
-                                {% if request.user.role_id  == 1 or request.user.role_id  == 2 %}
+                                {% if request.user.role_id  == 4 or request.user.role_id  == 2 %}
                                             <a class="nav-link" href="{% url 'commande' %}">Commande</a>
                                             {% endif %}
-                                            {% if request.user.role_id  == 1 or request.user.role_id  == 2 %}
+                                            {% if request.user.role_id  == 4 or request.user.role_id  == 2 %}
                                             <a class="nav-link" href="{% url 'payement' %}">Payement</a>
                                             {% endif %}
                                             
