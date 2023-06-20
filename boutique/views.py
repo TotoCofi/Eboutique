@@ -27,6 +27,7 @@ def permission(request,type):
     
     else:
         return False
+
 @login_required
 def prix_unitaire(request):
     pro_id= request.POST.get('id')
@@ -35,7 +36,6 @@ def prix_unitaire(request):
      return JsonResponse({'produit':produit.prix,"qte":produit.quantite})
     else:  
      return JsonResponse({'produit':'prix unitaire'})   
-
 
 def verification(request):
   if request.method == 'POST':
@@ -62,7 +62,6 @@ def verification(request):
          return render(request, 'verification.html',{'error_messages': message})
   else:
     return render(request, 'verification.html')
-  
 
 def generate_unique_code():
     length = 6  # Longueur du code à usage unique
@@ -448,3 +447,25 @@ def detaille_payement(request,id_pay):
    else:
        return render(request,'401.html')   
    
+
+def setting(request):
+    user = get_object_or_404(Users, pk=request.user.id)
+    
+    if request.method == 'POST':
+        a_mdp = request.POST['a_mdp']
+        n_mpd = request.POST['n_mdp']
+        c_mpd = request.POST['c_mdp']
+        
+        if user.check_password(a_mdp):
+            if n_mpd == c_mpd:
+                user.set_password(n_mpd)
+                user.save()
+                messages.success(request, 'Le mot de passe a été modifié avec succès')
+                logout(request)
+                return redirect('/')
+            else:
+                messages.error(request, 'Le nouveau mot de passe et la confirmation ne correspondent pas')
+        else:
+            messages.error(request, 'L\'ancien mot de passe ne correspond pas')
+    
+    return render(request, 'setting.html')

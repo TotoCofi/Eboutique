@@ -36,6 +36,7 @@ urlpatterns = [
     path('add_commande',add_commande,name='add_commande'),
     path('prix_unitaire/',prix_unitaire,name='prix_unitaire/'),
     path('payement',payement,name='payement'),
+    path('setting',setting,name='setting'),
     path('update_client/<int:id>',update_client,name='update_client'),
     path('update_user/<int:id>',update_user,name='update_user'),
     path('update_categorie/<int:id>',update_categorie,name='update_categorie'),
