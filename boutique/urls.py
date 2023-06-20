@@ -19,9 +19,10 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from boutique.views import *
+from django.conf.urls import handler404
 
 
-
+handler404 = 'boutique.views.my_custom_404_view'
 
 urlpatterns = [
     path('verification', verification, name='verification'),
@@ -34,6 +35,7 @@ urlpatterns = [
     path('categorie',categorie,name="categorie"),
     path('produit',produit,name="produit"),
     path('commande',commande,name='commande'),
+    path('commande/<int:val>',commande,name='commande'),
     path('add_commande',add_commande,name='add_commande'),
     path('prix_unitaire/',prix_unitaire,name='prix_unitaire/'),
     path('payement',payement,name='payement'),

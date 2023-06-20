@@ -217,7 +217,7 @@ def client(request):
        return render(request,'401.html')   
 
 @login_required
-def categorie(request):
+def categorie(request, ):
    if permission(request,'gerant')== True: 
     categories = Categories.objects.all() # on recupère tout les catégorie enregistrés dans la base de données
     if request.method == "POST":
@@ -406,9 +406,15 @@ def add_commande(request):
        return render(request,'401.html')  
 
 @login_required
-def commande(request):
+def commande(request,val=None):
    if permission(request,'caisse')== True:   
-    commande = Commandes.objects.select_related('client','user')
+    if val:
+        commande = Commandes.objects.filter(is_active=val).select_related('client','user')
+
+    else:
+        commande = Commandes.objects.select_related('client','user')
+
+
     if request.method == "POST":
         id= request.POST.get('id')
         commandes =get_object_or_404(Commandes,pk =id)
@@ -438,7 +444,12 @@ def commande(request):
 
 @login_required
 def log(request):  
-    log = Log.objects.all()
+    user=request.user
+    if user.role.nom=="Admin":
+
+      log = Log.objects.all()
+    else:
+      log = Log.objects.filter(user=user) 
     return render(request,'log.html',{'logs':log})
    
 @login_required
@@ -492,3 +503,7 @@ def setting(request):
             messages.error(request, 'L\'ancien mot de passe ne correspond pas')
     
     return render(request, 'setting.html')
+
+def my_custom_404_view(request, exception):
+    return render(request, '404.html', status=404)
+
