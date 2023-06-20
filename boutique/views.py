@@ -1,3 +1,4 @@
+import email
 import json
 from django.contrib import messages
 from django.http import JsonResponse
@@ -9,7 +10,8 @@ from django.core.mail import send_mail
 from django.contrib.auth import logout,authenticate, login
 from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
-import re
+
+from django.core.paginator import Paginator
 import random
 import string
 def save(request,message,type):
@@ -85,6 +87,7 @@ def codemail(request,code,email):
             request.session.set_expiry(durée_expiration.total_seconds())
 
 def acceuil(request):
+    produit = Produits.objects.filter(quantite__lte =F('seuil')).all()
     if not request.user.id:
         if request.method == 'POST':
             email = request.POST.get('email')
@@ -129,7 +132,7 @@ def acceuil(request):
 
         return render(request,'login.html')
     else:
-       return render(request,'index.html')
+       return render(request,'index.html',{'produits':produit})
 
 def user_logout(request):
   logout(request)
@@ -163,6 +166,7 @@ def user(request):
                 nom= request.POST.get('nom')
                 prenom= request.POST.get('prenom')
                 roll= request.POST.get('role')
+                phone = request.POST.get('phone')
                 password= request.POST.get('password')
                 c_password = request.POST.get('c_password')
                 role=Roles.objects.get(id=roll)
@@ -450,7 +454,12 @@ def log(request):
       log = Log.objects.all()
     else:
       log = Log.objects.filter(user=user) 
-    return render(request,'log.html',{'logs':log})
+
+    paginator = Paginator(log, 10)  # 10 projets par page
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request,'log.html',{'logs':page_obj})
    
 @login_required
 def payement(request):
@@ -486,22 +495,39 @@ def setting(request):
     user = get_object_or_404(Users, pk=request.user.id)
     
     if request.method == 'POST':
-        a_mdp = request.POST['a_mdp']
-        n_mpd = request.POST['n_mdp']
-        c_mpd = request.POST['c_mdp']
-        
-        if user.check_password(a_mdp):
-            if n_mpd == c_mpd:
-                user.set_password(n_mpd)
-                user.save()
-                messages.success(request, 'Le mot de passe a été modifié avec succès')
-                logout(request)
-                return redirect('/')
-            else:
-                messages.error(request, 'Le nouveau mot de passe et la confirmation ne correspondent pas')
+        # on recure les champs du formulaire modifier profile
+        nom = request.POST['nom']
+        prenom = request.POST['prenom']
+        phone = request.POST['phone']
+        email = request.POST['email']
+
+        if 'nom' in request.POST or 'prenom' in request.POST or 'phone' in request.POST or 'email' in request.POST:
+            user = request.user
+            users = Users.objects.get(id = user.id)
+            users.first_name = nom
+            users.last_name = prenom
+            users.phone = phone
+            users.email = email
+            users.save()
+            messages.success(request,'Le profile à été modifier avec succès ')
         else:
-            messages.error(request, 'L\'ancien mot de passe ne correspond pas')
-    
+             #on recuper les champs du formulaire changer de mot de passe
+            a_mdp = request.POST['a_mdp']
+            n_mpd = request.POST['n_mdp']
+            c_mpd = request.POST['c_mdp']
+
+            if user.check_password(a_mdp):
+                if n_mpd == c_mpd:
+                    user.set_password(n_mpd)
+                    user.save()
+                    messages.success(request, 'Le mot de passe a été modifié avec succès')
+                    logout(request)
+                    return redirect('/')
+                else:
+                    messages.error(request, 'Le nouveau mot de passe et la confirmation ne correspondent pas')
+            else:
+                messages.error(request, 'L\'ancien mot de passe ne correspond pas')
+        
     return render(request, 'setting.html')
 
 def my_custom_404_view(request, exception):

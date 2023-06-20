@@ -46,7 +46,9 @@
                 <li class="nav-item">
                   <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-change-password">Changer le mot de Passe</button>
                 </li>
-
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Modifier le Profile</button>
+                  </li>
               </ul>
               <div class="tab-content pt-2">
 
@@ -58,6 +60,10 @@
 
                   <div class="row">
                     <div class="col-lg-3 col-md-4 mt-3  label ">Nom</div>
+                    <div class="col-lg-9 col-md-8">{{user.first_name}}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-3 col-md-4 mt-3  label ">Nom</div>
                     <div class="col-lg-9 col-md-8">{{user.last_name}}</div>
                   </div>
 
@@ -67,7 +73,7 @@
                   </div>
 
                   <div class="row">
-                    <div class="col-lg-3 col-md-4 mt-3  label">Job</div>
+                    <div class="col-lg-3 col-md-4 mt-3  label">Role</div>
                     <div class="col-lg-9 col-md-8">{{user.role.nom}}</div>
                   </div>
 
@@ -90,14 +96,6 @@
                     <div class="col-lg-3 col-md-4 mt-3  label">Email</div>
                     <div class="col-lg-9 col-md-8">{{user.email}}</div>
                   </div>
-
-                </div>
-
-                
-
-                <div class="tab-pane fade pt-3" id="profile-settings">
-
-                 
 
                 </div>
 
@@ -142,7 +140,84 @@
                     </div>
                   </form><!-- End Change Password Form -->
 
-                </div>
+                </div> 
+                
+                
+                <div class="tab-pane fade pt-3" id="profile-edit">
+                    <!-- Change Password Form -->
+                    {% if messages %}
+                      {% for message in messages %}
+                      <div {% if message.tags == 'success' %} class="alert alert-success" role="alert">
+                          {{message}}
+                        </div>
+  
+                        <div {% else %} class="alert alert-danger" role="alert" {% endif %}>
+                          {{message}}
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                          <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">Profile Image</label>
+                          <div class="col-md-8 col-lg-9">
+                            <img src="https://bootdey.com/img/Content/avatar/avatar7.png" width="75" height="75" alt="Profile">
+                        
+                          </div>
+                        </div>
+    
+                        <div class="row mb-3">
+                          <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Nom</label>
+                          <div class="col-md-8 col-lg-9">
+                            <input name="nom" type="text" class="form-control" id="fullName" value="{{user.first_name}}">
+                          </div>
+                        </div>
+    
+                        <div class="row mb-3">
+                            <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Prenom</label>
+                            <div class="col-md-8 col-lg-9">
+                              <input name="prenom" type="text" class="form-control" id="fullName" value="{{user.last_name}}">
+                            </div>
+                          </div>
+    
+                        <div class="row mb-3">
+                          <label for="company" class="col-md-4 col-lg-3 col-form-label">Entreprise</label>
+                          <div class="col-md-8 col-lg-9">
+                            <input  type="text" class="form-control" id="company" value="KG-Group" disabled >
+                          </div>
+                        </div>
+    
+    
+                        <div class="row mb-3">
+                          <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Phone</label>
+                          <div class="col-md-8 col-lg-9">
+                            <input name="phone" type="text" class="form-control" id="Phone" value="{{user.phone}}">
+                          </div>
+                        </div>
+    
+                        <div class="row mb-3">
+                          <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                          <div class="col-md-8 col-lg-9">
+                            <input name="email" type="email" class="form-control" id="Email" value="{{user.email}}">
+                          </div>
+                        </div>
+    
+                        <div class="text-center">
+                          <button type="submit" class="btn btn-warning">Modifier le Profile</button>
+                        </div>
+                      </form><!-- End Profile Edit Form -->
+    
+                    </div>
+    
+                    <div class="tab-pane fade pt-3" id="profile-settings">
+    
+                      <!-- Settings Form -->
+                      <form>
+  
+                  </div>
+
+
+
 
               </div><!-- End Bordered Tabs -->
 
