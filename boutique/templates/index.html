@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-primary text-white mb-4">
-                        <div class="card-body"><h2>Clients</h2> </div>
+                        <div class="card-body"><h2>Clients</h2> <span class="badge bg-white text-dark " >{{nb_cli}}</span></div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{% url 'client' %}">Voir les Détailles</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-warning text-white mb-4">
-                        <div class="card-body"><h2>Produits</h2> </div>
+                        <div class="card-body"><h2>Produits</h2><span class="badge bg-white text-dark " >{{nb_pro}}</span> </div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{% url 'produit' %}">Voir les Détailles</a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -32,7 +32,7 @@
                 </div>
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body"><h2>Commande Valider</h2> </div>
+                        <div class="card-body"><h2>Commande Valider</h2><span class="badge bg-white text-dark " >{{nb_cmdv}}</span> </div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{% url 'commande' 1 %}">Voir le Détailles </a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-danger text-white mb-4">
-                        <div class="card-body"><h2>Commande Annuler</h2> </div>
+                        <div class="card-body"><h2>Commande Annuler</h2> <span class="badge bg-white text-dark " >{{nb_cmda}}</span></div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <a class="small text-white stretched-link" href="{% url 'commande' 0 %}">Voir les Détailles </a>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -72,7 +72,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    DataTable Example
+                   Produits en rupture de stock
                 </div>
                 <div class="card-body">
                     <table id="datatablesSimple">

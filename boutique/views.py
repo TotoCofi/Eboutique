@@ -88,6 +88,11 @@ def codemail(request,code,email):
 
 def acceuil(request):
     produit = Produits.objects.filter(quantite__lte =F('seuil')).all()
+    nb_cmda = Commandes.objects.filter(is_active=0).count()
+    nb_cmdv = Commandes.objects.filter(is_active=1).count()
+    nb_cli=Clients.objects.all().count()
+    nb_pro=Produits.objects.all().count()
+
     if not request.user.id:
         if request.method == 'POST':
             email = request.POST.get('email')
@@ -132,7 +137,7 @@ def acceuil(request):
 
         return render(request,'login.html')
     else:
-       return render(request,'index.html',{'produits':produit})
+       return render(request,'index.html',{'produits':produit,'nb_cli':nb_cli,'nb_pro': nb_pro,'nb_cmdv' :nb_cmdv,'nb_cmda': nb_cmda})
 
 def user_logout(request):
   logout(request)
