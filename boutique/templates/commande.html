@@ -19,6 +19,15 @@
                     </div>
 
                         <hr>
+                        {% if messages %}
+                        {% for message in messages %}
+                                    <div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}  "> 
+                                 
+                                         {{message}}
+                          
+                          </div>
+                          {% endfor %}
+                                              {% endif %}
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
@@ -28,7 +37,6 @@
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
-                                        <th>Commande id</th>
                                         <th>Nom client</th>
                                         <th>Nom utilisateur</th>
                                         <th>Statut</th>
@@ -41,7 +49,6 @@
                                 <tbody>
                                     {% for commande in commandes %}
                                     <tr>
-                                        <td>{{commande.id}}</td>
                                         <td>{{commande.client.nom}}</td>
                                         <td>{{commande.user.first_name}} {{commande.user.last_name}}</td>
                                         <td>{% if commande.is_active == 0 %}
@@ -56,11 +63,21 @@
                                       </td>
                                         <td>{{commande.created_at}}</td>
                                         <td> 
-                                          <a href="{% url 'det_commande' commande.id %}" class="btn btn-outline-warning"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                          </svg></a>
-                    
+                                          <a href="{% url 'det_commande' commande.id %}" class="btn btn-outline-warning">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-eye" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                              <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path>
+                                              <path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"></path>
+                                           </svg></a>
+                                           {% if commande.is_active == 1 %}
+                                          <a onclick=" addid({{commande.id}}) "  data-bs-toggle="modal" data-bs-target="#myModals" class="btn btn-outline-primary">
+                                            
+                                           <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M18 6l-12 12"></path>
+                                            <path d="M6 6l12 12"></path>
+                                         </svg> </a>
+                                         {% endif %}
                                             
                                         </td>
                                     </tr>
@@ -72,7 +89,28 @@
                 </div>
         
                 {% include   "footer.html" %}
-              
+                <div class="modal fade" id="myModals" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form method='post' action="">
+                          {% csrf_token %}
+                          <div class="modal-body">
+                              <div class="form-group mb-4">
+                                
+                              <label for="email1">Voulez vous Annuler cette commande</label>
+                                  <input type="text" class="form-control" id="id" name='id' hidden>
+                         
+                                
+                                </div>
+                          </div>
+                          <div class="modal-footer border-top-0 d-flex justify-content-center">
+                            <button type="submit" class="btn btn-success">Annuler</button>
+                            <button type="reset" data-bs-toggle="modal" data-bs-target="#myModals" class="btn btn-danger">Retour</button>
+                          </div>
+                        </form>
+                    </div>
+                  </div>
+                </div>
             </div>
         
             <!-- Bootstrap core JavaScript
@@ -104,6 +142,12 @@
                   });
                 }, false);
               })();
+
+              
+function addid(id)
+{
+document.getElementById('id').value=id
+}
             </script>
           </body>
         </html>

@@ -15,11 +15,13 @@
                     <div class="mb-4">
                       {% if messages %}
                       {% for message in messages %}
-                      <div class="alert alert-danger" role="alert">
-                        {{message}}
-                      </div>
-                      {% endfor %}
-                    {% endif %}
+                                  <div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}  "> 
+                               
+                                       {{message}}
+                        
+                        </div>
+                        {% endfor %}
+                                            {% endif %}
                         <button type="button"  data-bs-toggle="modal" data-bs-target="#myModal"
                      
                        style="padding: 5px,5px,5px,5px;" class="btn btn-outline-warning text-dark">Ajouter
@@ -40,6 +42,7 @@
                                         <th>Quantier</th>
                                         <th>Prix</th>
                                         <th>seuil</th>
+                                        <th>statut</th>
                                         <th>Categorie</th>
                                         <th>Action</th>
                                         
@@ -53,11 +56,30 @@
                                         <td>{{produit.quantite}}</td>
                                         <td>{{produit.prix}}</td>
                                         <td>{{produit.seuil}}</td>
+
+                                        <td>{% if produit.quantite <= produit.seuil %}
+                                          <div class="badge bg-danger"> 
+                                             En rupture
+                   </div>
+                                       {% else %} 
+                                       <div class="badge bg-success"> 
+                                          En stock
+               </div>
+                                       {% endif %}
+
+
+                                        </td>
+
+
                                         <td>{{produit.categorie.nom}}</td>
-                                        <td><a href="{% url 'update_produit' produit.id %}" class="btn btn-outline-warning"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
-                                          </svg></a>
+                                        <td><a href="{% url 'update_produit' produit.id %}" class="btn btn-outline-warning">
+                                          
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                                            <path d="M16 5l3 3"></path>
+                                         </svg></a>
                                         </td>
                                        
                                     </tr>

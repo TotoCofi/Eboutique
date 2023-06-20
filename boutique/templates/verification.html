@@ -30,16 +30,16 @@
 			      			<h3 class="mb-4">Verification de compte</h3>
 			      		</div>
 								
-			      	</div>{% if error_messages %}
-                      <div class="badge bg-danger text-whit"> 
+			      	</div>{% if messages %}
+					{% for message in messages %}
+                      <div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}  "> 
                    
-                           {{error_messages}}</div>
+                           {{message}}
+						
+						</div>
+						{% endfor %}
                                 {% endif %}
-                                {% if messages %}
-                     <div class="badge bg-success"> 
-                   
-                                 {{messages}}</div>
-                                      {% endif %}<form action="#" class="signin-form" method='post'>
+                                <form action="#" class="signin-form" method='post'>
                                 {% csrf_token %}
 			      		<div class="form-group mb-3">
 			      			<label class="label" for="name">Code de verification</label>

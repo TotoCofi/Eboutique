@@ -13,7 +13,11 @@ from django.contrib.auth.decorators import login_required
 import re
 import random
 import string
-from django.core import serializers
+def save(request,message,type):
+    user=request.user
+    log=Log(user=user,message=message,type=type)
+    log.save()
+
 @login_required
 def permission(request,type):
     user=Users.objects.select_related('role').get(id=request.user.id)
@@ -53,14 +57,12 @@ def verification(request):
                 return redirect('/')
 
               else:
-                message = " code non valide"
-                return render(request, 'verification.html',{'error_messages': message})
+                messages.error = (request, " code non valide")
             
           else:
                 return redirect('login')
       else:
-         message = " delai expiré"
-         return render(request, 'verification.html',{'error_messages': message})
+                messages.error = (request," delai expiré")
   else:
     return render(request, 'verification.html')
 
@@ -87,12 +89,12 @@ def acceuil(request):
     if not request.user.id:
         if request.method == 'POST':
             email = request.POST.get('email')
-            print(email)
+           
             password = request.POST.get('password')
-            print(password)
+            
             remember_me = request.POST.get('remember_me')
             user= Users.objects.filter(email=email).first()
-            print(user)
+            
             if user is not None:
                     if user.is_staff == 0:
                        messages.error(request,'Votre Compte est désactivé')
@@ -109,25 +111,22 @@ def acceuil(request):
                                 return redirect('verification')
 
                             else:
-                                message = "Email ou mot de passe non valide"
-                                return render(request, 'login.html',{'error_messages': message})
+                                messages.error = (request,"Email ou mot de passe non valide")
                         else:
                                 #user = authenticate(request,email=email, password=password)
                                 print(user)
                                 if user is not None:
                                     if user.check_password(password):
-                                        login(request, user)  
+                                        login(request, user) 
+                                        
                                         return redirect('/')
                                     else:
-                                        message = "Mot de passe non valide"
-                                    return render(request, 'login.html',{'error_messages': message})
+                                        messages.error = (request, "Mot de passe non valide")
                                 else:
-                                    message = "Email ou mot de passe non valide"
-                                    return render(request, 'login.html',{'error_messages': message,} )
+                                    messages.error = (request,"Email ou mot de passe non valide")
                         
             else:
-                    message = "Email  non valide"
-                    return render(request, 'login.html',{'error_messages': message,})
+                messages.error = (request, "Email  non valide")
 
         return render(request,'login.html')
     else:
@@ -145,9 +144,14 @@ def user(request):
     if request.method == 'POST':
         if 'mdp' in request.POST:
             user=Users.objects.filter(id=request.POST['id']).first()
+            if request.POST['mdp']<8:
+                messages.error(request,'Le mot de passe doit contenir au moins 8 caractères.')
+
             if request.POST['mdp'] == request.POST['c_mdp']:
                 user.set_password(request.POST['mdp'])
                 user.save()
+                
+                save(request,"Modification du mot de passe de l'utilisateur"+user.first_name+" "+user.last_name,'user')
                 messages.success(request,'Le mot de passe à été modifier avec succes')
             else:
                 messages.error(request,'Les mots de passe ne sont pas identique')
@@ -155,51 +159,40 @@ def user(request):
             email=request.POST.get('email')
             user = Users.objects.filter(email=email).first()
             if user:
-                message = "Email existe déja"
-                return render(request, 'user.html',{'error_messages': message})
-       
-            else : 
-                benin_regex = r"^(\+229)?\d{8}$"
-                phone=request.POST.get('phone')
-
-            if not re.match(benin_regex, phone):
-                message = "Numéro de téléphone invalide ou non du Bénin"
-                return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
-               
-            nom= request.POST.get('nom')
-            prenom= request.POST.get('prenom')
-            roll= request.POST.get('role')
-            password= request.POST.get('password')
-            c_password = request.POST.get('c_password')
-            role=Roles.objects.get(id=roll)
-            if role:
-            
-                if len(password)<8:
-                    message = "Le mot de passe doit contenir au moins 8 caractères."
-                    return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
-                        
-                if password != c_password :  
-                    message = "Les mot de passe doivent etre identique"
-                    return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
-                else:
-                    user = Users.objects.create_superuser(password=password, username = email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
-                    #user.set_password(password) 
-                    subject = 'Bienvenue !'
-                     
-                    from_email = 'your_email@example.com'
-                    recipient_list = [email]
-                    message = render_to_string('register-mail.html', {'email': email, 'password': password})
-                                            
-                    send_mail(subject, strip_tags(message), from_email, recipient_list, html_message=message)
-
-                    user.save()
-                    users=Users.objects.select_related('role')
-                    message = "Utilisateur enregister"
-                    return render(request, 'user.html',{'roles':rol,'messages': message,'users':users})
-            else:
+                messages.error = (request, "Email existe déja")
+            else:   
+                nom= request.POST.get('nom')
+                prenom= request.POST.get('prenom')
+                roll= request.POST.get('role')
+                password= request.POST.get('password')
+                c_password = request.POST.get('c_password')
+                role=Roles.objects.get(id=roll)
+                if role:
                 
-                    message = "role innexistant"
-                    return render(request, 'user.html',{'roles':rol,'error_messages': message,'users':users})
+                    if len(password)<8:
+                        messages.error(request,'Le mot de passe doit contenir au moins 8 caractères.')
+                    if password != c_password :  
+                       messages.error(request,'Les mots de passe ne sont pas identique')
+                    else:
+                        user = Users.objects.create_superuser(password=password, username = email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
+                        #user.set_password(password) 
+                        subject = 'Bienvenue !'
+                        
+                        from_email = 'your_email@example.com'
+                        recipient_list = [email]
+                        message = render_to_string('register-mail.html', {'email': email, 'password': password})
+                                                
+                        send_mail(subject, strip_tags(message), from_email, recipient_list, html_message=message)
+
+                        user.save()
+                        users=Users.objects.select_related('role')
+                      
+                        save(request,"Enregistrement de l'utilisateur"+user.first_name+" "+user.last_name,'user')
+                        
+                        messages.success = (request, "Utilisateur enregister")
+                else:
+                
+                    messages.error(request,"role innexistant")
     return render(request,'user.html',{'roles':rol,'users':users})
    else:
        return render(request,'401.html')
@@ -219,6 +212,7 @@ def client(request):
         else:
             client = Clients(nom = nom,adresse = adresse,phone = phone,user = user ) 
             client.save()
+            save(request,"Enregistrement du client "+client.nom,'client')
     return render(request,'client.html',{'clients':clients})
    else:
        return render(request,'401.html')   
@@ -232,6 +226,7 @@ def categorie(request):
         user = Users.objects.get(id = request.user.id)  # user reprsente un instance de la clase Users
         categorie = Categories(nom = nom,user = user)
         categorie.save()
+        save(request,"Enregistrement de la categorie "+categorie.nom,'categorie')
     return render(request,'categorie.html',{'categories':categories})
    else:
        return render(request,'401.html')  
@@ -256,6 +251,7 @@ def produit(request):
         else:
             produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
             produit.save()
+            save(request,"Enregistrement du produit "+produit.nom,'produit')
     return render(request,'produit.html',{"categories":categories,"produits":produits})
    else:
        return render(request,'401.html')  
@@ -270,6 +266,7 @@ def update_client(request,id):
         client_u.phone = request.POST["phone"]
         client_u.user = Users.objects.get(id = request.user.id)
         client_u.save()
+        save(request,"modification des informations du client "+client_u.nom,"client")
         return redirect('client')
 
     return render(request,'update_client.html',{'clients_u':client_u})
@@ -282,12 +279,6 @@ def update_user(request,id):
     rol= Roles.objects.all()
     user = get_object_or_404(Users, pk = id)
     if request.method == "POST":
-            benin_regex = r"^(\+229)?\d{8}$"
-            phone=request.POST.get('phone')
-
-            if not re.match(benin_regex, phone):
-                message = "Numéro de téléphone invalide ou non du Bénin"
-                return render(request, 'update_user.html',{'error_messages': message,'user':user,'roles':rol})
             user.first_name = request.POST['nom']
             user.first_prenom = request.POST['prenom']
             user.role_id= request.POST.get('role')
@@ -295,6 +286,7 @@ def update_user(request,id):
             user.phone = request.POST["phone"]
             user.is_staff= request.POST['statut']
             user.save()
+            save(request,"modification des informations de l'utilisateur "+user.first_name+" "+user.last_name,'user')
             return redirect('user')
 
     return render(request,'update_user.html',{'user':user,'roles':rol})
@@ -309,6 +301,7 @@ def update_categorie(request,id):
         categorie_u.nom = request.POST['nom']
         categorie_u.user = Users.objects.get(id = request.user.id)
         categorie_u.save()
+        save(request,"modification des informations de la categorie "+categorie_u.nom,'categorie')
         return redirect('categorie')
 
     return render(request,'update_categorie.html',{'categories_u':categorie_u})
@@ -327,6 +320,7 @@ def update_produit(request,id):
         produit_u.seuil = request.POST['seuil']
         produit_u.user = Users.objects.get(id = request.user.id)
         produit_u.save()
+        save(request,"modification des informations du produit "+produit_u.nom,'produit')
         return redirect('produit')
 
     return render(request,'update_produit.html',{'produits_u':produit_u})
@@ -387,14 +381,10 @@ def add_commande(request):
                     payement.save()   
                  else:
              
-                    message = "Erreur de mode de payement"
-                        
-                    return render(request,'Ajout_commande.html',{'error_messages': message,'cli':clients,'pros':produits,"modes":Modes})    
-            
+                    messages.error(request,"Erreur de mode de payement")
             else:
-               message = "Client introuvable"
-               return render(request,'Ajout_commande.html',{'error_messages': message,'cli':clients,'pros':produits,"modes":Modes})
-
+               messages.error(request,"Client introuvable")
+               
 
             for i in range(taille_liste):
                 
@@ -405,9 +395,10 @@ def add_commande(request):
                         prixcommande=prix[i]
                         acheter=Acheter(commande=commande,Produit=produit,quantite=qte[i],prixcommande=prixcommande)
                         acheter.save() 
-            message = "Commande ajouter"
-            return render(request,'Ajout_commande.html',{'messages': message,'cli':clients,'pros':produits,"modes":Modes})
-
+            
+            save(request,"Commande effectué par le client"+client.nom,'commande')
+            
+            messages.error(request, "Commande ajouter")
     return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits,"modes":Modes})
    
    
@@ -419,10 +410,38 @@ def add_commande(request):
 def commande(request):
    if permission(request,'caisse')== True:   
     commande = Commandes.objects.select_related('client','user')
+    if request.method == "POST":
+        id= request.POST.get('id')
+        commandes =get_object_or_404(Commandes,pk =id)
+        if commandes:
+            achat=Acheter.objects.filter(commande = commandes)
+            print(achat)
+            for ach in achat:
+                produit=Produits.objects.get(id=ach.Produit_id)
+                print(produit)
+                produit.quantite+=ach.quantite
+                produit.save()
+            commandes.is_active=False
+            commandes.save()
+            messages.success(request, "Commande Annulé")
+
+
+
+        else:
+            messages.error(request, "Commande introuvable")
+
+
+
+
     return render(request,'commande.html',{'commandes':commande})
    else:
        return render(request,'401.html') 
 
+@login_required
+def log(request):  
+    log = Log.objects.all()
+    return render(request,'log.html',{'logs':log})
+   
 @login_required
 def payement(request):
    if permission(request,'caisse')== True:    
@@ -435,16 +454,20 @@ def payement(request):
 def detaille_commande(request,id):
    if permission(request,'caisse')== True: 
     cmd_id = get_object_or_404(Commandes,pk = id)
+    payement = Payements.objects.get(commande = cmd_id)
     acheter = Acheter.objects.filter(commande = cmd_id).select_related('Produit')
     
-    return render(request,'detaille_commande.html',{'det_cmd':acheter,'cmd_cli':cmd_id})
+    return render(request,'detaille_commande.html',{'payements':payement,'det_cmd':acheter,'cmd_cli':cmd_id})
    else:
        return render(request,'401.html')   
 
 def detaille_payement(request,id_pay):
    if permission(request,'caisse')== True: 
     payement = Payements.objects.get(id = id_pay)
-    return render(request,'detaille_payement.html',{'payements':payement})
+    cmd_id = get_object_or_404(Commandes,pk = payement.commande_id)
+    acheter = Acheter.objects.filter(commande = cmd_id).select_related('Produit')
+
+    return render(request,'detaille_payement.html',{'payements':payement,'det_cmd':acheter,'cmd_cli':cmd_id})
    else:
        return render(request,'401.html')   
    

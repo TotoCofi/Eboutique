@@ -57,6 +57,11 @@ class Payements(models.Model):
     created_at =models.DateTimeField(default=timezone.now)
  
 
-         
+class Log(models.Model):
+    
+    user= models.ForeignKey('Users', on_delete=models.CASCADE)
+    message=models.TextField()
+    type= models.CharField(max_length=255,default=None)
+    created_at =models.DateTimeField(default=timezone.now)
     
 
