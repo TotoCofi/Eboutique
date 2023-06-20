@@ -86,6 +86,7 @@ def codemail(request,code,email):
             request.session.set_expiry(durée_expiration.total_seconds())
 
 def acceuil(request):
+    produit = Produits.objects.filter(quantite__lte =F('seuil')).all()
     if not request.user.id:
         if request.method == 'POST':
             email = request.POST.get('email')
@@ -130,7 +131,7 @@ def acceuil(request):
 
         return render(request,'login.html')
     else:
-       return render(request,'index.html')
+       return render(request,'index.html',{'produits':produit})
 
 def user_logout(request):
   logout(request)

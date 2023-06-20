@@ -56,7 +56,7 @@
                                         <td>{{produit.quantite}}</td>
                                         <td>{{produit.prix}}</td>
                                         <td>{{produit.seuil}}</td>
-
+                                        <td>{{produit.categorie.nom}}</td>
                                         <td>{% if produit.quantite <= produit.seuil %}
                                           <div class="badge bg-danger"> 
                                              En rupture
@@ -71,7 +71,7 @@
                                         </td>
 
 
-                                        <td>{{produit.categorie.nom}}</td>
+                                        
                                         <td><a href="{% url 'update_produit' produit.id %}" class="btn btn-outline-warning">
                                           
                                           <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
