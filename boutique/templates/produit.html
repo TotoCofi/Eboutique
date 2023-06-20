@@ -42,6 +42,7 @@
                                         <th>Quantier</th>
                                         <th>Prix</th>
                                         <th>seuil</th>
+                                        <th>statut</th>
                                         <th>Categorie</th>
                                         <th>Action</th>
                                         
@@ -55,6 +56,21 @@
                                         <td>{{produit.quantite}}</td>
                                         <td>{{produit.prix}}</td>
                                         <td>{{produit.seuil}}</td>
+
+                                        <td>{% if produit.quantite <= produit.seuil %}
+                                          <div class="badge bg-danger"> 
+                                             En rupture
+                   </div>
+                                       {% else %} 
+                                       <div class="badge bg-success"> 
+                                          En stock
+               </div>
+                                       {% endif %}
+
+
+                                        </td>
+
+
                                         <td>{{produit.categorie.nom}}</td>
                                         <td><a href="{% url 'update_produit' produit.id %}" class="btn btn-outline-warning">
                                           

@@ -23,10 +23,10 @@
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
-                                        <th>id_command</th>
                                         <th>nom du client</th>
                                         <th>nom de la caissiere</th>
                                         <th>montant payer</th>
+                                        <th>mode payement</th>
                                         <th>Date de payement</th>
                                         <th>Action</th>
                                         
@@ -36,10 +36,10 @@
                                 <tbody>
                                     {% for pay in payements %}
                                     <tr>
-                                        <td>{{pay.commande.id}}</td>
                                         <td>{{pay.commande.client.nom}}</td>
                                         <td>{{pay.user.first_name}} {{pay.user.last_name}}</td>
                                         <td>{{pay.commande.prixtotal}}</td>
+                                        <td>{{pay.mode_payement.mode}}</td>
                                         <td>{{pay.created_at}}</td>
                                         <td> 
                                           <a href="{% url 'detaille_payement' pay.id %}" class="btn btn-outline-warning">
