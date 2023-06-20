@@ -37,24 +37,15 @@
 									</p>
 								</div>
 			      	</div>
-					{% if messages %}
-					{% for message in messages %}
-					<div class="alert alert-danger" role="alert">
-                        {{message}}
-                      </div>
-					{% endfor %}
-					{% endif %}
-                      {% if error_messages %}
-                      <div class="badge bg-danger"> 
-                   
-                           {{error_messages}}</div>
-                                {% endif %}
-
-                                {% if messages %}
-                     <div class="badge bg-success"> 
-                   
-                                 {{messages}}</div>
-                                      {% endif %}
+					  {% if messages %}
+					  {% for message in messages %}
+						<div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}  "> 
+					 
+							 {{message}}
+						  
+						  </div>
+						  {% endfor %}
+								  {% endif %}
 							<form action="#" class="signin-form" method='post'>
                                 {% csrf_token %}
 			      		<div class="form-group mb-3">

@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',acceuil,name="acceuil"),  
     path('logout',user_logout,name="logout"),
+    path('log',log,name="log"),
     path("user",user,name="user"),
     path('client',client,name='client'),
     path('categorie',categorie,name="categorie"),

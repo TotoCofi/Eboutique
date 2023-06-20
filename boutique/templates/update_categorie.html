@@ -21,7 +21,15 @@
                         <div class="row d-flex justify-content-center">
                             <div class="col-xl-7 col-lg-8 col-md-9 col-11 text-center">
                                 <div class="card">
-                                    
+                                    {% if messages %}
+					{% for message in messages %}
+                      <div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}  "> 
+                   
+                           {{message}}
+						
+						</div>
+						{% endfor %}
+                                {% endif %}
                                     <form class="form-card" method="post">
                                         {% csrf_token %}
                                         
