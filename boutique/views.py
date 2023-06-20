@@ -1,3 +1,4 @@
+import email
 import json
 from django.contrib import messages
 from django.http import JsonResponse
@@ -452,20 +453,37 @@ def setting(request):
     user = get_object_or_404(Users, pk=request.user.id)
     
     if request.method == 'POST':
-        a_mdp = request.POST['a_mdp']
-        n_mpd = request.POST['n_mdp']
-        c_mpd = request.POST['c_mdp']
-        
-        if user.check_password(a_mdp):
-            if n_mpd == c_mpd:
-                user.set_password(n_mpd)
-                user.save()
-                messages.success(request, 'Le mot de passe a été modifié avec succès')
-                logout(request)
-                return redirect('/')
-            else:
-                messages.error(request, 'Le nouveau mot de passe et la confirmation ne correspondent pas')
+        # on recure les champs du formulaire modifier profile
+        nom = request.POST['nom']
+        prenom = request.POST['prenom']
+        phone = request.POST['phone']
+        email = request.POST['email']
+
+        if 'nom' in request.POST or 'prenom' in request.POST or 'phone' in request.POST or 'email' in request.POST:
+            user = request.user
+            users = Users.objects.get(id = user.id)
+            users.first_name = nom
+            users.last_name = prenom
+            users.phone = phone
+            users.email = email
+            users.save()
+            messages.success(request,'Le profile à été modifier avec succès ')
         else:
-            messages.error(request, 'L\'ancien mot de passe ne correspond pas')
-    
+             #on recuper les champs du formulaire changer de mot de passe
+            a_mdp = request.POST['a_mdp']
+            n_mpd = request.POST['n_mdp']
+            c_mpd = request.POST['c_mdp']
+
+            if user.check_password(a_mdp):
+                if n_mpd == c_mpd:
+                    user.set_password(n_mpd)
+                    user.save()
+                    messages.success(request, 'Le mot de passe a été modifié avec succès')
+                    logout(request)
+                    return redirect('/')
+                else:
+                    messages.error(request, 'Le nouveau mot de passe et la confirmation ne correspondent pas')
+            else:
+                messages.error(request, 'L\'ancien mot de passe ne correspond pas')
+        
     return render(request, 'setting.html')
