@@ -1,5 +1,9 @@
-import email
-import json
+
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth,TruncDay
+import calendar
+from datetime import datetime, timedelta
+from django.db.models import Count
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render ,get_object_or_404
@@ -8,7 +12,6 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
 from django.contrib.auth import logout,authenticate, login
-from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 
 from django.core.paginator import Paginator
@@ -92,6 +95,37 @@ def acceuil(request):
     nb_cmdv = Commandes.objects.filter(is_active=1).count()
     nb_cli=Clients.objects.all().count()
     nb_pro=Produits.objects.all().count()
+    mois = []
+    jours = []
+    for i in range(10):
+        demandes_jour = Commandes.objects.filter( is_active=1, created_at__date=(datetime.now() - timedelta(days=i))).\
+        annotate(day=TruncDay('created_at')).\
+        values('day').\
+        annotate(count=Count('id')).\
+        order_by('day')
+
+    count = demandes_jour[0]['count'] if demandes_jour else 0
+
+    jours.append({
+        'mois': (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d'),
+        'count': count
+    })
+   
+
+    for i in range(1, 13):
+      demandes_mois = Commandes.objects.filter( is_active=1, created_at__year=datetime.now().year, created_at__month=i).\
+        annotate(month=TruncMonth('created_at')).\
+        values('month').\
+        annotate(count=Sum('prixtotal')).\
+        order_by('month')
+
+      count = demandes_mois[0]['count'] if demandes_mois else 0
+
+      mois.append({
+        'mois': calendar.month_name[i],
+        'count': count
+    })
+
 
     if not request.user.id:
         if request.method == 'POST':
@@ -137,7 +171,7 @@ def acceuil(request):
 
         return render(request,'login.html')
     else:
-       return render(request,'index.html',{'produits':produit,'nb_cli':nb_cli,'nb_pro': nb_pro,'nb_cmdv' :nb_cmdv,'nb_cmda': nb_cmda})
+       return render(request,'index.html',{'dmd_j':jours,'dmd_m':mois,'produits':produit,'nb_cli':nb_cli,'nb_pro': nb_pro,'nb_cmdv' :nb_cmdv,'nb_cmda': nb_cmda})
 
 def user_logout(request):
   logout(request)
