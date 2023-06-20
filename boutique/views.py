@@ -164,6 +164,7 @@ def user(request):
                 nom= request.POST.get('nom')
                 prenom= request.POST.get('prenom')
                 roll= request.POST.get('role')
+                phone = request.POST.get('phone')
                 password= request.POST.get('password')
                 c_password = request.POST.get('c_password')
                 role=Roles.objects.get(id=roll)
