@@ -104,12 +104,12 @@ def acceuil(request):
         annotate(count=Count('id')).\
         order_by('day')
 
-    count = demandes_jour[0]['count'] if demandes_jour else 0
+        count = demandes_jour[0]['count'] if demandes_jour else 0
 
-    jours.append({
-        'mois': (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d'),
-        'count': count
-    })
+        jours.append({
+            'mois': (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d'),
+            'count': count
+        })
    
 
     for i in range(1, 13):

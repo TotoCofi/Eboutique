@@ -2,6 +2,9 @@
 
 
 {% block body %}
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+           
 <style>
     body{color: #000;overflow-x: hidden;height: 100%;background-repeat: no-repeat;background-size: 100% 100%}.card{padding: 30px 40px;margin-top: 60px;margin-bottom: 60px;border: none !important;box-shadow: 0 6px 12px 0 rgba(0,0,0,0.2)}.blue-text{color: #00BCD4}.form-control-label{margin-bottom: 0}input, textarea, button{padding: 8px 15px;border-radius: 5px !important;margin: 5px 0px;box-sizing: border-box;border: 1px solid #ccc;font-size: 18px !important;font-weight: 300}input:focus, textarea:focus{-moz-box-shadow: none !important;-webkit-box-shadow: none !important;box-shadow: none !important;border: 1px solid #00BCD4;outline-width: 0;font-weight: 400}.btn-block{text-transform: uppercase;font-size: 15px !important;font-weight: 400;height: 43px;cursor: pointer}.btn-block:hover{color: #fff !important}button:focus{-moz-box-shadow: none !important;-webkit-box-shadow: none !important;box-shadow: none !important;outline-width: 0}
 </style>
@@ -45,7 +48,13 @@
                                         <div class="row justify-content-between text-left">
                                            
                                             <div class="form-group col-12 flex-column d-flex">
-                                                <select class="form-control" name='role' >
+                                                 <script>
+      $(document).ready(function() {
+          $('.select2').select2({
+             width: 'resolve'
+        });
+      });
+  </script><select style="width: 100% ; height:100%" class="select2 form-control" name='role' >
                                                     <option>roles</option>
                                                     {% for role in roles %}
                                                     {% if user.role.id == role.id %}
@@ -61,7 +70,7 @@
                                         <div class="row justify-content-between text-left">
                                            
                                             <div class="form-group col-12 flex-column d-flex">
-                                                <select class="form-control" name='statut' >
+                                                 <select style="width: 100% ; height:100%" class="select2 form-control" name='statut' >
                                                    
                                                     <option value="0" {% if user.is_staff == 0 %}selected  {% endif %}> Desactivé </option>
 
@@ -85,7 +94,6 @@
                 </div>                    
     </main>
 </div>
-
 <script>
     function validate(val) {
     v1 = document.getElementById("fname");

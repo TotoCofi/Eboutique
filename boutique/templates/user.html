@@ -134,13 +134,14 @@
                        
                               </div> 
                               <div class="form-group  mb-4">
-                                <label for="email1">Roles</label>
-                                <select class="form-control" name='role' >
+                                <label for="email1">Roles</label><br/>
+                                <select class="select2 form-control " name='role'  style="width: 100% ; height:100%" >
                        <option>roles</option>
                        {% for role in roles %}
                        <option value="{{role.id}}"> {{role.nom}}</option>
                         {% endfor %}
                                 </select>
+                               
                               </div>
                               <div class="form-group  mb-4">
                                 <label for="password1">Password</label>
@@ -194,10 +195,7 @@
             ================================================== -->
             <!-- Placed at the end of the document so the pages load faster -->
             <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-            <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-            <script src="../../../../assets/js/vendor/popper.min.js"></script>
-            <script src="../../../../dist/js/bootstrap.min.js"></script>
-            <script src="../../../../assets/js/vendor/holder.min.js"></script>
+           
             <script>  function phonenumber()
 {
     const indiaRegex = /^(\+229)?\d{8}$/;
@@ -238,7 +236,14 @@ document.getElementById('id').value=id
           </body>
         </html>
     </main>
-   
+    <script>
+      $(document).ready(function() {
+          $('.select2').select2({
+            dropdownParent: $('#myModal'), width: 'resolve'
+        });
+      });
+  </script>
+</body>
 {% endblock body %}
             
 
