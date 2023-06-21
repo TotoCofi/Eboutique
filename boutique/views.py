@@ -494,7 +494,7 @@ def log(request):
     else:
       log = Log.objects.filter(user=user) 
 
-    paginator = Paginator(log, 10)  # 10 projets par page
+    paginator = Paginator(log, 5)  # 10 projets par page
 
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
