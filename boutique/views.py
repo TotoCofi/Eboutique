@@ -101,8 +101,8 @@ def acceuil(request):
         demandes_jour = Commandes.objects.filter( is_active=1, created_at__date=(datetime.now() - timedelta(days=i))).\
         annotate(day=TruncDay('created_at')).\
         values('day').\
-        annotate(count=Count('id')).\
-        order_by('day')
+        annotate(count=Count('id'))
+       
 
         count = demandes_jour[0]['count'] if demandes_jour else 0
 
@@ -449,7 +449,7 @@ def add_commande(request):
        return render(request,'401.html')  
 
 @login_required
-def commande(request,val=False):
+def commande(request,val=None):
    if permission(request,'caisse')== True:   
     if val==0 or val==1:
         commande = Commandes.objects.filter(is_active=val).select_related('client','user')
