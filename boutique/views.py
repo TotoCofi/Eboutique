@@ -449,9 +449,9 @@ def add_commande(request):
        return render(request,'401.html')  
 
 @login_required
-def commande(request,val=None):
+def commande(request,val=False):
    if permission(request,'caisse')== True:   
-    if val:
+    if val==0 or val==1:
         commande = Commandes.objects.filter(is_active=val).select_related('client','user')
 
     else:
