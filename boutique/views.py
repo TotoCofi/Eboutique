@@ -7,6 +7,7 @@ from django.db.models import Count
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render ,get_object_or_404
+from pymysql import NULL
 from .models import *
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -449,7 +450,7 @@ def add_commande(request):
        return render(request,'401.html')  
 
 @login_required
-def commande(request,val=False):
+def commande(request,val=None):
    if permission(request,'caisse')== True:   
     if val==0 or val==1:
         commande = Commandes.objects.filter(is_active=val).select_related('client','user')
