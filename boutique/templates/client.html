@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block body %}
+            
+<div id="layoutSidenav_content">
+    <main>
+            <div class="container-fluid">
+                
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Client</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item "><a class="text-warning" href="{% url 'acceuil' %}">Acceuil </a></li>
+                        <li class="breadcrumb-item active">Client</li>
+                    </ol>
+                    <div class="mb-4">
+                      {% if messages %}
+                      {% for message in messages %}
+                                  <div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}  "> 
+                               
+                                       {{message}}
+                        
+                        </div>
+                        {% endfor %}
+                                            {% endif %}
+                        <button type="button"  data-bs-toggle="modal" data-bs-target="#myModal"
+                     
+                       style="padding: 5px,5px,5px,5px;" class="btn btn-outline-warning text-dark">Ajouter
+                         </button>    
+                    </div>
+
+                        <hr>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                           Liste des Client
+                        </div>
+                        <div class="card-body">
+                            <table id="datatablesSimple">
+                                <thead>
+                                    <tr>
+                                        <th>Nom Client</th>
+                                        <th>Adresse</th>
+                                        <th>Phone</th>
+                                        <th>Action</th>
+                                        
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                   {% for client in clients %}
+                                    <tr>
+                                        <td>{{client.nom}}</td>
+                                        <td>{{client.adresse}}</td>
+                                        <td>{{client.phone}}</td>
+                                        <td> 
+                                          <a href="{% url 'update_client' client.id %}" class="btn btn-outline-warning">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user-edit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                              <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+                                              <path d="M6 21v-2a4 4 0 0 1 4 -4h3.5"></path>
+                                              <path d="M18.42 15.61a2.1 2.1 0 0 1 2.97 2.97l-3.39 3.42h-3v-3l3.42 -3.39z"></path>
+                                           </svg>
+                                          </a> 
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                   
+                    <form method='post' action="">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-group mb-4">
+                                <label for="email1">Nom</label>
+                                <input type="text" class="form-control" id="email1" name='nom' aria-describedby="emailHelp" placeholder="Enter nom">
+                       
+                              </div>
+                              <div class="form-group  mb-4">
+                                <label for="email1">Adresse</label>
+                                <input type="text" class="form-control" value="{{clients_u.adresse}}" name='adresse' id="email1" aria-describedby="emailHelp" placeholder="Enter adresse">
+                       
+                              </div>
+                          <div class="form-group  mb-4">
+                            <label for="email1">Phone</label>
+                            <input type="text" class="form-control" id="email1" value="{{clients_u.phone}}" name='phone' aria-describedby="emailHelp" placeholder="Enter phone">
+                   
+                          </div>  
+                          
+                        </div>
+                        <div class="modal-footer border-top-0 d-flex justify-content-center">
+                          <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+              </div><br><br><br>
+              {% include   "footer.html" %}
+        </div>
+
+      
+            <!-- Bootstrap core JavaScript
+            ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+           
+            <script>
+              // Example starter JavaScript for disabling form submissions if there are invalid fields
+              (function() {
+                'use strict';
+        
+                window.addEventListener('load', function() {
+                  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                  var forms = document.getElementsByClassName('needs-validation');
+        
+                  // Loop over them and prevent submission
+                  var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                      if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }
+                      form.classList.add('was-validated');
+                    }, false);
+                  });
+                }, false);
+              })();
+            </script>
+          </body>
+        </html>
+    </main>
+  
+   
+              
+
+            
+{% endblock body %}
+
+    

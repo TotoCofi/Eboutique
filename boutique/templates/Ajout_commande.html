@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+
+{% block body %}
+            
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+         
+<div id="layoutSidenav_content">
+    <main>
+            <div class="container-fluid">
+                
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Commande</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item "><a class="text-warning" href="{% url 'acceuil' %}">Acceuil</a></li>
+                        <li class="breadcrumb-item active">Ajout Commande</li>
+                    </ol>
+                 
+                   
+                </div>
+                <main id="main" class="main">              
+                    <section class="section profile">
+                      <div class="row">
+                        <div class="col-xl-4">
+                
+                          <div class="card"> 
+                            {% if error_messages %}
+                            <div class="badge bg-danger"> 
+                         
+                                 {{error_messages}}</div>
+                                      {% endif %}
+                                      {% if messages %}
+                           <div class="badge bg-success"> 
+                         
+                                       {{messages}}</div>
+                                            {% endif %}
+                            <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                
+                          <div>
+                            
+                                  
+                                    <div class="row justify-content-between mb-3 text-left">
+                                        <div class="form-group col-sm-6 flex-column d-flex"> 
+                                           <script>
+      $(document).ready(function() {
+          $('.select2').select2({ width: 'resolve'
+        });
+      });
+  </script><select style="width: 100% ; height:100%" class="select2 form-select" name="client" id='pro_id'onchange='prix_unitaire()' aria-label="Default select example"required>
+                                            <option selected>Produit</option>
+                                            {% for c in pros %}
+                                     
+                                            <option value="{{c.id}}" >{{c.nom}} </option>
+
+                                         {% endfor %}
+                                          
+                                          </select> </div>
+                                        <div class="form-group col-sm-6 flex-column d-flex">
+                                             <label class="form-control-label " id='pu'>Prix unitaire</label><span class='text-danger'>fcfa</span>
+                                           </div>
+                                    </div>
+                                    <div class="row justify-content-between text-left mb-3 ">
+                                      <div class="form-group col-sm-6 flex-column d-flex"> 
+                                        <input type="number" id='qte' class="form-control" onchange='prix_total()'name='quantiter' aria-describedby="emailHelp" placeholder="Quantité">
+                       
+                                       </div>
+                                      <div class="form-group col-sm-6 flex-column d-flex">
+                                           <label class="form-control-label " id='pt'>Prix Total</label> <span class='text-danger'>fcfa</span>
+                                         </div>
+                                  </div>
+                                    
+                                    <div class="row justify-content-between ">
+                                        <div class="form-group col-sm-12  "> <button type="submit" onclick='sav()' class="btn-block btn btn-warning">Ajouter</button> </div>
+                                    </div>
+                       
+                            </div>
+                          </div>
+                          </div>
+                
+                        </div>
+                
+                        <div class="col-xl-8">
+                
+                          <div class="card">
+                            <div class="card-body pt-3">
+                              <!-- Bordered Tabs -->
+                         
+                              <div class="tab-content pt-2">
+                
+                                <form method='post' action="">
+                                  {% csrf_token %}
+                                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-shopping-bag" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z"></path>
+                                    <path d="M9 11v-5a3 3 0 0 1 6 0v5"></path>
+                                 </svg>
+                                 <span class="badge bg-primary " id='nb'>0</span>
+                                <table  class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produit</th>
+                                            <th>quantité</th>
+                                            <th>prix unitaire</th>
+                                            <th>prix total</th>
+                                            <th>Action</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody  id="tableBody">
+                                    
+                                    </tbody>
+                                </table>
+                                <div class="row justify-content-between mb-3 text-left">
+                                    <div class="form-group mb-3 col-6 flex-column d-flex"> 
+                                       
+                                         <script>
+      $(document).ready(function() {
+          $('.select2').select2({ width: 'resolve'
+        });
+      });
+  </script><select style="width: 100% ; height:100%" class="select2 form-select" name="client" id='cli_id' aria-label="Default select example"required>
+                                            <option selected>Client</option>
+                                            {% for c in cli %}
+                                     
+                                            <option value="{{c.id}}">{{c.nom}}</option>
+                                         {% endfor %}
+                                          
+                                          </select> </div> 
+                             
+                                <div class="form-group col-6 flex-column d-flex"> 
+
+                                           
+                                   <script>
+      $(document).ready(function() {
+          $('.select2').select2({ width: 'resolve'
+        });
+      });
+  </script><select style="width: 100% ; height:100%" class="select2 form-select" name="mode" id='mode_id' aria-label="Default select example"required>
+                                      <option >Mode de payement</option>
+                                      {% for c in modes %}
+                               
+                                      <option value="{{c.id}}">{{c.mode}}</option>
+                                   {% endfor %}
+                                    
+                                    </select> </div> <div class="form-group col-6 flex-column d-flex"> 
+                      <button type="submit"  
+                   
+                     style="padding: 5px,5px,5px,5px;"  class="btn btn-outline-warning text-dark ">Valider
+                       </button>    
+                      </form>
+                  </div>
+                </div>
+                              </div><!-- End Bordered Tabs -->
+                
+                            </div>
+                          </div>
+                
+                        </div>
+                      </div>
+                    </section>
+                   
+                  </main><!-- End #main -->
+                {% include   "footer.html" %}
+              
+            </div>
+        
+            <!-- Bootstrap core JavaScript
+            ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+           
+          
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+ function prix_unitaire() {
+      document.getElementById('pu').innerHTML=''
+      let id=document.getElementById('pro_id').value
+      if(id==null)
+      {
+        alert('produit innexistant')
+      }else
+      {
+      $.ajax({
+        url: '/prix_unitaire/',  // URL de la vue pour supprimer l'utilisateur
+        type: 'POST',
+        data: {
+          'id': id,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        
+        success: function(response) {
+      
+            document.getElementById('pu').innerHTML=response.produit
+            document.getElementById('qte').setAttribute('max', response.qte);
+
+     
+         
+          
+        },
+        error: function(xhr, textStatus, errorThrown) {
+          // Traitement en cas d'erreur lors de la suppression de l'utilisateur
+          console.log(errorThrown);
+        }
+      });
+    }
+    }
+    function prix_total()
+    {      
+
+     max= parseInt( document.getElementById('qte').getAttribute('max'))
+    
+if (document.getElementById('qte').value <= max)
+{
+  document.getElementById('pt').innerHTML=''
+let pu=document.getElementById('pu').innerHTML
+document.getElementById('pt').innerHTML= pu * document.getElementById('qte').value
+
+}else{
+  document.getElementById('pt').innerHTML='la quantiter est superieur au stock'
+  document.getElementById('qte').value=''
+}
+
+
+
+    }
+
+  </script>
+
+
+<script>
+     
+var total=0
+var nb=0
+    function sav()
+    {
+      let pro_id=document.getElementById('pro_id').value
+      
+      let cli_id=parseInt(document.getElementById('cli_id').value)
+  
+      let  qte = document.getElementById('qte').value
+      if(document.getElementById('pro_id').selectedIndex == 0  || qte=='')
+      {
+        alert('Veuillez remplir tout les champs')
+      }else
+      {
+
+     
+          
+var pro_nom= $('#pro_id').find(':selected').text()
+var pu=parseInt(document.getElementById('pu').innerHTML)
+var pt=parseInt(document.getElementById('pt').innerHTML)
+          var row = $('<tr>'); 
+     
+            var produitCell = $('<td>').text(pro_nom);
+              produitCell.append($('<input>').val(pro_id).attr('name', 'produit').prop('hidden', true))
+            var quantiteCell = $('<td>').text(qte);
+              quantiteCell.append($('<input>').val(qte).attr('name', 'qte_commande').prop('hidden', true))
+            var prixUnitaireCell = $('<td>').text(pu);
+            var prixTotalCell = $('<td>').text(pt);
+              prixTotalCell.append($('<input>').val(pt).attr('name', 'prixtotal').prop('hidden', true))
+              
+              total += pt;
+              var deleteIcon = $('<i>').addClass('fas fa-trash-alt'); 
+                 var btn =$('<button>').addClass('btn btn-da')  
+                  
+                  
+                  btn.click(function() {
+                  var icon = $(this);                  
+                    
+                   icon.closest('tr').remove();
+              total-=pt
+              $('.total').text(total)
+              $('.total').append($('<input>').val(total).attr('name', 'total').prop('hidden', true))
+
+                    $('#pro_id').append($('<option>', {
+                      value: pro_id,
+                      text: pro_nom
+                  }));
+                  nb-=1
+                  $('#nb').text(nb)
+                })
+                btn.append(deleteIcon)
+                var actionCell = $('<td>').append(btn);
+           
+         
+            // Ajouter les cellules à la ligne
+            row.append(produitCell, quantiteCell, prixUnitaireCell, prixTotalCell, actionCell);
+  
+            // Ajouter la ligne au <tbody>
+            $('#tableBody tr').last().remove();
+            $('#tableBody').append(row);
+            nb+=1
+            $('#nb').text(nb)
+         
+          var row = $('<tr>'); 
+            var t=$('<th>').text("TOTAL");
+  var totalCell = $('<td>').text(total);
+    totalCell.append($('<input>').val(total).attr('name', 'total').prop('hidden', true))
+    totalCell.addClass('total')
+    row.append(t,totalCell)
+            // Ajouter la cellule de total à la dernière colonne de chaque ligne du tableau
+            $('#tableBody').append(row);
+
+         
+
+           for (var i = 0; i < document.getElementById('pro_id').options.length; i++) {
+            var option =  document.getElementById('pro_id').options[i];
+          
+            // Vérifier si la valeur de l'option correspond à celle à supprimer
+            if (option.value === document.getElementById('pro_id').value) {
+              // Supprimer l'option du select
+              document.getElementById('pro_id').remove(i);
+              break; // Arrêter la boucle après la suppression de l'option
+            }
+          }
+        
+           document.getElementById('pro_id').selectedIndex = 0
+      document.getElementById('qte').value=''
+         
+  document.getElementById('pt').innerHTML='Prix unitaire'
+  document.getElementById('pu').innerHTML='Prix total'
+          
+       
+    }
+  
+      }
+  </script>
+
+          </body>
+        </html>
+    </main>
+   
+{% endblock body %}
+            
+
+    

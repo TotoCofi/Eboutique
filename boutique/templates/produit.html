@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block body %}
+            
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+         
+<div id="layoutSidenav_content">
+    <main>
+            <div class="container-fluid">
+                
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Produit</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item "><a class="text-warning" href="{% url 'acceuil' %}">Acceuil </a></li>
+                        <li class="breadcrumb-item active">Produit</li>
+                    </ol>
+                    <div class="mb-4">
+                      {% if messages %}
+                      {% for message in messages %}
+                                  <div class="alert {% if message.tags %} alert-{{ message.tags }} {% endif %}  "> 
+                               
+                                       {{message}}
+                        
+                        </div>
+                        {% endfor %}
+                                            {% endif %}
+                        <button type="button"  data-bs-toggle="modal" data-bs-target="#myModal"
+                     
+                       style="padding: 5px,5px,5px,5px;" class="btn btn-outline-warning text-dark">Ajouter
+                         </button>    
+                    </div>
+
+                        <hr>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                           Liste des Produit
+                        </div>
+                        <div class="card-body">
+                            <table id="datatablesSimple">
+                                <thead>
+                                    <tr>
+                                        <th>Nom Produit</th>
+                                        <th>Quantier</th>
+                                        <th>Prix</th>
+                                        <th>seuil</th>
+                                        <th>statut</th>
+                                        <th>Categorie</th>
+                                        <th>Action</th>
+                                        
+                                    </tr>
+                                </thead>
+                                
+                                <tbody>
+                                    {% for produit in produits %}
+                                    <tr>
+                                        <td>{{produit.nom}}</td>
+                                        <td>{{produit.quantite}}</td>
+                                        <td>{{produit.prix}}</td>
+                                        <td>{{produit.seuil}}</td>
+                                        <td>{{produit.categorie.nom}}</td>
+                                        <td>{% if produit.quantite <= produit.seuil %}
+                                          <div class="badge bg-danger"> 
+                                             En rupture
+                   </div>
+                                       {% else %} 
+                                       <div class="badge bg-success"> 
+                                          En stock
+               </div>
+                                       {% endif %}
+
+
+                                        </td>
+
+
+                                        
+                                        <td><a href="{% url 'update_produit' produit.id %}" class="btn btn-outline-warning">
+                                          
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                                            <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                                            <path d="M16 5l3 3"></path>
+                                         </svg></a>
+                                        </td>
+                                       
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <form method='post' action="">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="form-group mb-4">
+                                    <label for="email1">Nom Produit</label>
+                                    <input type="text" class="form-control" id="email1" name='nom' aria-describedby="emailHelp" placeholder="nom du produit">
+                           
+                                  </div>
+                                  <div class="form-group  mb-4">
+                                    <label for="email1">description</label>
+                                    <textarea class="form-control" name='description' id="exampleFormControlTextarea1" rows="3"></textarea>
+                                  </div>
+                              <div class="form-group  mb-4">
+                                <label for="email1">Prix</label>
+                                <input type="text" class="form-control" id="email1" name='prix' aria-describedby="emailHelp" placeholder="prix">
+                       
+                              </div> 
+                              <div class="form-group  mb-4">
+                                <label for="email1">Quantiter</label>
+                                <input type="text" class="form-control" id="email1"name='quantiter' aria-describedby="emailHelp" placeholder="Quantité">
+                       
+                              </div>
+                              
+                              <div class="form-group  mb-4">
+                                <label for="password1">Seuil</label>
+                                <input type="number" class="form-control" id="password1" name='seuil' placeholder="Seuil de rupture">
+                              </div>
+                              <div class="form-group">
+                                <label for="password1">Categorie</label>
+                                 <script>
+      $(document).ready(function() {
+          $('.select2').select2({
+            dropdownParent: $('#myModal'), width: 'resolve'
+        });
+      });
+  </script><select style="width: 100% ; height:100%" class="select2 form-control" name='cate' >
+                                    <option>Categorie</option>
+                                    {% for categorie in categories %}
+                                    <option value="{{categorie.id}}"> {{categorie.nom}}</option>
+                                     {% endfor %}
+                                             </select>
+                            </div>
+                            </div>
+                            <div class="modal-footer border-top-0 d-flex justify-content-center">
+                              <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                          </form>
+                      </div>
+                    </div>
+                  </div>
+              
+            </div>
+        
+                {% include   "footer.html" %}
+            </div>
+        
+            <!-- Bootstrap core JavaScript
+            ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+           
+            <script>
+              // Example starter JavaScript for disabling form submissions if there are invalid fields
+              (function() {
+                'use strict';
+        
+                window.addEventListener('load', function() {
+                  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                  var forms = document.getElementsByClassName('needs-validation');
+        
+                  // Loop over them and prevent submission
+                  var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                      if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }
+                      form.classList.add('was-validated');
+                    }, false);
+                  });
+                }, false);
+              })();
+            </script>
+          </body>
+        </html>
+    </main>
+   
+{% endblock body %}
+            
+
+    
