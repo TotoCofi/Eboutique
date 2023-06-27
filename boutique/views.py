@@ -1,4 +1,3 @@
-
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth,TruncDay
 import calendar
@@ -18,6 +17,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 import random
 import string
+
+
+
 def save(request,message,type):
     user=request.user
     log=Log(user=user,message=message,type=type)
@@ -210,7 +212,11 @@ def user(request):
                 password= request.POST.get('password')
                 c_password = request.POST.get('c_password')
                 role=Roles.objects.get(id=roll)
-                if role:
+                phone = Users.objects.filter(phone = phone).first()
+                if phone:
+                    messages.error(request,'le numéro exist dejà')
+                    
+                elif role:
                 
                     if len(password)<8:
                         messages.error(request,'Le mot de passe doit contenir au moins 8 caractères.')
@@ -218,7 +224,7 @@ def user(request):
                        messages.error(request,'Les mots de passe ne sont pas identique')
                     else:
                         user = Users.objects.create_superuser(password=password, username = email, is_active=0, first_name = nom ,last_name = prenom ,phone=phone,email = email,role=role)
-                        #user.set_password(password) 
+                          
                         subject = 'Bienvenue !'
                         
                         from_email = 'your_email@example.com'
@@ -232,7 +238,7 @@ def user(request):
                       
                         save(request,"Enregistrement de l'utilisateur"+user.first_name+" "+user.last_name,'user')
                         
-                        messages.success = (request, "Utilisateur enregister")
+                        messages.success = (request, "Utilisateur enregister avec succès")
                 else:
                 
                     messages.error(request,"role innexistant")
@@ -270,6 +276,7 @@ def categorie(request, ):
         categorie = Categories(nom = nom,user = user)
         categorie.save()
         save(request,"Enregistrement de la categorie "+categorie.nom,'categorie')
+        messages.success(request,f'la categorie {nom} à été ajouter avec succès')
     return render(request,'categorie.html',{'categories':categories})
    else:
        return render(request,'401.html')  
@@ -295,6 +302,7 @@ def produit(request):
             produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
             produit.save()
             save(request,"Enregistrement du produit "+produit.nom,'produit')
+            messages.success(request,f'Le Produit {nom} à été ajouter avec succès')
     return render(request,'produit.html',{"categories":categories,"produits":produits})
    else:
        return render(request,'401.html')  
