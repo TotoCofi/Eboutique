@@ -155,7 +155,7 @@ def acceuil(request):
                                 messages.error = (request,"Email ou mot de passe non valide")
                         else:
                                 #user = authenticate(request,email=email, password=password)
-                                print(user)
+                                
                                 if user is not None:
                                     if user.check_password(password):
                                         login(request, user) 
@@ -279,21 +279,34 @@ def produit(request):
     produits = Produits.objects.all() # on recupère tout les produits enregistrés dans la base de données
     categories = Categories.objects.all()
     if request.method == "POST":
-        nom = request.POST['nom']
-        description = request.POST['description']
-        prix = request.POST['prix']
-        quantiter = request.POST['quantiter']
-        seuil = request.POST['seuil']
-        id = request.POST['cate']
-        cat = Categories.objects.get(id = id )  # cat reprsente un instance de la clase Catégories
-        user = Users.objects.get(id = request.user.id)  # user reprsente un instance de la clase Users
-        pro = Produits.objects.filter(nom = nom) # verifions si le produit exist dans la base de donnée
-        if pro: 
-            messages.error(request,'Ce produit existe déja')
+        if 'qte' in  request.POST:
+            qte=request.POST['qte']
+            id=request.POST['id']
+            produit_u = get_object_or_404(Produits, pk = id )
+            if produit_u:
+                produit_u.quantite+=int(qte)
+                produit_u.save()
+                save(request,"Approvisionnement de " +qte+" du produit "+produit_u.nom)
+                messages.success(request,"Approvisionnement du produit "+produit_u.nom)
+                
+            else:
+                messages.error(request,"Ce produit n'existe pas")
+
         else:
-            produit = Produits(nom = nom,description = description,prix = prix,quantite = quantiter,seuil = seuil,categorie = cat,user = user)
-            produit.save()
-            save(request,"Enregistrement du produit "+produit.nom,'produit')
+            nom = request.POST['nom']
+            description = request.POST['description']
+            prix = request.POST['prix']
+            seuil = request.POST['seuil']
+            id = request.POST['cate']
+            cat = Categories.objects.get(id = id )  # cat reprsente un instance de la clase Catégories
+            user = Users.objects.get(id = request.user.id)  # user reprsente un instance de la clase Users
+            pro = Produits.objects.filter(nom = nom) # verifions si le produit exist dans la base de donnée
+            if pro: 
+                messages.error(request,'Ce produit existe déja')
+            else:
+                produit = Produits(nom = nom,description = description,prix = prix,seuil = seuil,categorie = cat,user = user)
+                produit.save()
+                save(request,"Enregistrement du produit "+produit.nom,'produit')
     return render(request,'produit.html',{"categories":categories,"produits":produits})
    else:
        return render(request,'401.html')  
@@ -358,7 +371,6 @@ def update_produit(request,id):
         produit_u.nom = request.POST['nom']
         produit_u.description = request.POST['description']
         produit_u.prix = request.POST['prix']
-        produit_u.quantite = request.POST['quantite']
         produit_u.seuil = request.POST['seuil']
         produit_u.user = Users.objects.get(id = request.user.id)
         produit_u.save()

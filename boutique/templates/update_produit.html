@@ -10,10 +10,10 @@
             <div class="container-fluid">
                 
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Client</h1>
+                    <h1 class="mt-4">Produit</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item "><a class="text-warning" href="{% url 'acceuil' %}">Acceuil </a></li>
-                        <li class="breadcrumb-item active">Mise à jour Client</li>
+                        <li class="breadcrumb-item "><a class="text-warning" href="{% url 'produit' %}">Produit </a></li><li class="breadcrumb-item active">Mise à jour Produit</li>
                     </ol>
                   
 
@@ -37,13 +37,11 @@
                                             <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Prix<span class="text-danger"> *</span></label> <input type="text" id="lname" value="{{produits_u.prix}}" name="prix" ext-danger"></span></label> </div>
                                         </div>
                                         <div class="row justify-content-between text-left">
-                                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Quantiter<span class="text-danger"> *</span></label> <input type="text" id="fname" value="{{produits_u.quantite}}"  name="quantite"  onblur="validate(1)"> </div>
+                                            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">description<span class="text-danger"> *</span></label> <input type="text" id="ans" value="{{produits_u.description}}"  name="description" placeholder="" onblur="validate(6)"> </div>
                                             <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Seuil<span class="text-danger"> *</span></label> <input type="text" id="lname" value="{{produits_u.seuil}}" name="seuil" ext-danger"></span></label> </div>
                                         </div>
                                         
-                                        <div class="row justify-content-between text-left">
-                                            <div class="form-group col-12 flex-column d-flex"> <label class="form-control-label px-3">description<span class="text-danger"> *</span></label> <input type="text" id="ans" value="{{produits_u.description}}"  name="description" placeholder="" onblur="validate(6)"> </div>
-                                        </div>
+                                     
                                         <div class="row justify-content-end">
                                             <div class="form-group col-sm-12  "> <button type="submit" class="btn-block btn btn-warning">Valider</button> </div>
                                         </div>
