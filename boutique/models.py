@@ -3,6 +3,8 @@ from django.db.models import F
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
 
+
+
 class Users(AbstractUser):
     phone = models.CharField(max_length=50, unique=True, null=True)
     password=models.TextField()
@@ -16,6 +18,14 @@ class Categories(models.Model):
     nom = models.CharField(max_length=255, unique=True)
     user= models.ForeignKey('Users', on_delete=models.CASCADE)
     created_at =models.DateTimeField(default=timezone.now)
+    categorie = models.ForeignKey("self", null=True, blank= True,on_delete=models.CASCADE)
+
+    def get_sous_cat(id):#récupérer les sous-catégories d'une catégorie spécifique :
+        return Categories.objects.filter(categorie_id =id)
+    
+    def has_sous_cat(self):# pour vérifier si une catégorie a des sous-catégories :
+        return Categories.objects.filter(categorie = self)
+    
 
 class Produits(models.Model):
     nom = models.CharField(max_length=255, unique=True)

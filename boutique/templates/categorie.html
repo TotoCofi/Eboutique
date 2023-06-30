@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block body %}
-            
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
 <div id="layoutSidenav_content">
     <main>
             <div class="container-fluid">
@@ -39,20 +40,37 @@
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
-                                        <th>Nom Categorie</th>
-                                        <th>User</th>
+                                        <th>Categorie</th>
+                          
+                                        <th>Sous-Categorie</th>
                                         <th>Action</th>
                                         
                                         
                                     </tr>
                                 </thead>
                                 <tbody>
-                                   {% for categorie in categories %}
+                                   {% for cat in categories %}
                                     <tr>
-                                        <td>{{categorie.nom}}</td>
-                                        <td>{{categorie.user.last_name}}</td>
+                                        <td>{{cat.nom}}</td>
+                                        
                                         <td>
-                                            <a href="{% url 'update_categorie' categorie.id %}" class="btn btn-outline-warning">
+                                          <ul>
+                                            {% for sous_categorie in sous_categories %}
+                                            {% if sous_categorie.categorie.id == cat.id %}
+                                            <li>{{ sous_categorie.nom }} <a href="{% url 'update_categorie' sous_categorie.id %}" class="btn btn-outline-warning ">
+                                              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="10" height="10" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                                                <path d="M16 5l3 3"></path>
+                                             </svg>
+                                            </a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                          </ul>
+                                         </td>
+                                        <td >
+                                            <a href="{% url 'update_categorie' cat.id %}" class="btn btn-outline-warning">
                                               <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
@@ -63,6 +81,7 @@
                                         </td>
                                     </tr>
                                     {% endfor %}
+                                  
                                 </tbody>
                             </table>
                         </div>
@@ -80,9 +99,23 @@
                         {% csrf_token %}
                         <div class="modal-body">
                             <div class="form-group mb-4">
-                                <label for="email1">Nom Categorie</label>
+                                <label for="email1">Nom Categorie/Sous categorie</label>
                                 <input type="text" class="form-control" id="email1" name='nom' aria-describedby="emailHelp" placeholder="Enter categorie">
                        
+                              </div>
+                              <div class="form-group mb-4">
+                                <script>
+                                  $(document).ready(function() {
+                                      $('.select2').select2({
+                                        dropdownParent: $('#myModal'), width: 'resolve'
+                                    });
+                                  });
+                              </script><select style="width: 100% ; height:100%" class="select2 form-control" name='cate' >
+                                                                <option value =''>Categorie</option>
+                                                                {% for cat in categories %}
+                                                                <option value="{{cat.id}}">{{cat.nom}}</option>
+                                                                {% endfor %}
+                                                                         </select>
                               </div>
                         </div>
                         <div class="modal-footer border-top-0 d-flex justify-content-center">
