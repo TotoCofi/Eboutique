@@ -6,8 +6,8 @@ from django.db.models import Count
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render ,get_object_or_404
-
-from .models import *
+from django.db.models import Q
+from boutique.models import *
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
@@ -269,15 +269,23 @@ def client(request):
 @login_required
 def categorie(request, ):
    if permission(request,'gerant')== True: 
-    categories = Categories.objects.all() # on recupère tout les catégorie enregistrés dans la base de données
+    sous_categories = Categories.objects.filter(~Q(categorie=None)) # on recupère tout les sous catégories enregistrés dans la base de données
+    categories = Categories.objects.filter(categorie = None)
+  
     if request.method == "POST":
         nom = request.POST['nom']
         user = Users.objects.get(id = request.user.id)  # user reprsente un instance de la clase Users
-        categorie = Categories(nom = nom,user = user)
+        cate = request.POST['cate']
+        if cate:
+            cats = Categories.objects.get(id = cate)
+            categorie = Categories(nom = nom,user = user,categorie = cats)
+        else:
+            categorie = Categories(nom = nom,user = user)
+
         categorie.save()
         save(request,"Enregistrement de la categorie "+categorie.nom,'categorie')
         messages.success(request,f'la categorie {nom} à été ajouter avec succès')
-    return render(request,'categorie.html',{'categories':categories})
+    return render(request,'categorie.html',{'categories':categories, 'sous_categories': sous_categories})
    else:
        return render(request,'401.html')  
 
@@ -285,7 +293,7 @@ def categorie(request, ):
 def produit(request):
    if permission(request,'gerant')== True: 
     produits = Produits.objects.all() # on recupère tout les produits enregistrés dans la base de données
-    categories = Categories.objects.all()
+    categories = Categories.objects.exclude(categorie = None)
     if request.method == "POST":
         if 'qte' in  request.POST:
             qte=request.POST['qte']
