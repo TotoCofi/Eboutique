@@ -81,7 +81,7 @@
               <tbody>
                 {% for achat in det_cmd %}
                 <tr>
-                  <th scope="row">1</th>
+                  <th scope="row">{{forloop.counter}}</th>
                   <td>{{achat.Produit.nom}}</td>
                   <td>{{achat.quantite}}</td>
                   <td>{{achat.Produit.prix}} Fcfa</td>

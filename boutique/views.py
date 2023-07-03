@@ -177,6 +177,7 @@ def acceuil(request):
        return render(request,'index.html',{'dmd_j':jours,'dmd_m':mois,'produits':produit,'nb_cli':nb_cli,'nb_pro': nb_pro,'nb_cmdv' :nb_cmdv,'nb_cmda': nb_cmda})
 
 def user_logout(request):
+  save(request,"l'utilisateur"+request.user.last_name+''+ request.user.first_name+"vient de se deconnecté",'user')
   logout(request)
   return redirect('/')
 
@@ -466,10 +467,9 @@ def add_commande(request):
                         prixcommande=prix[i]
                         acheter=Acheter(commande=commande,Produit=produit,quantite=qte[i],prixcommande=prixcommande)
                         acheter.save() 
-            
+                        messages.success(request,'la commande à été ajouter avec succès')
             save(request,"Commande effectué par le client"+client.nom,'commande')
-            
-            messages.error(request, "Commande ajouter")
+           
     return render(request,'Ajout_commande.html',{'cli':clients,'pros':produits,"modes":Modes})
    
    
