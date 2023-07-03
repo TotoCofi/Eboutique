@@ -188,7 +188,7 @@ def user(request):
     if request.method == 'POST':
         if 'mdp' in request.POST:
             user=Users.objects.filter(id=request.POST['id']).first()
-            if request.POST['mdp']<8:
+            if len(request.POST['mdp'])<8:
                 messages.error(request,'Le mot de passe doit contenir au moins 8 caractères.')
 
             if request.POST['mdp'] == request.POST['c_mdp']:
@@ -294,7 +294,7 @@ def produit(request):
             if produit_u:
                 produit_u.quantite+=int(qte)
                 produit_u.save()
-                save(request,"Approvisionnement de " +qte+" du produit "+produit_u.nom)
+                save(request,"Approvisionnement de " +qte+" du produit "+produit_u.nom,'produit')
                 messages.success(request,"Approvisionnement du produit "+produit_u.nom)
                 
             else:
@@ -492,6 +492,7 @@ def commande(request,val=None):
                 produit.save()
             commandes.is_active=False
             commandes.save()
+            save(request,"Commande N"+commandes.id +" Annulé par le client"+commandes.client.nom,'commande')
             messages.success(request, "Commande Annulé")
 
 
